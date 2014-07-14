@@ -75,22 +75,54 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the date and time the server was last set or corrected
         /// </summary>
-        public DateTime? ReferenceTimestamp { get { return GetTime64(16); } }
+        public DateTime? ReferenceTimestamp { get { return GetDateTime64(16); } set { SetDateTime64(16, value); } }
 
         /// <summary>
         /// Gets the date and time this packet left the server
         /// </summary>
-        public DateTime? OriginTimestamp { get { return GetTime64(24); } }
+        public DateTime? OriginTimestamp { get { return GetDateTime64(24); } set { SetDateTime64(24, value); } }
 
         /// <summary>
         /// Gets the date and time this packet was received by the server
         /// </summary>
-        public DateTime? ReceiveTimestamp { get { return GetTime64(32); } }
+        public DateTime? ReceiveTimestamp { get { return GetDateTime64(32); } set { SetDateTime64(32, value); } }
 
         /// <summary>
         /// Gets the date and time that the packet was transmitted from the server
         /// </summary>
-        public DateTime? TransmitTimestamp { get { return GetTime64(40); } }
+        public DateTime? TransmitTimestamp { get { return GetDateTime64(40); } set { SetDateTime64(40, value); } }
+
+        /// <summary>
+        /// Gets or sets the time of reception of response NTP packet on the client.
+        /// This property is not part of the protocol. It is set by NtpClient.
+        /// </summary>
+        public DateTime? DestinationTimestamp { get; set; }
+
+        /// <summary>
+        /// Time spent on the wire in both directions together
+        /// </summary>
+        public TimeSpan RoundTripTime
+        {
+            get
+            {
+                if (OriginTimestamp == null || ReceiveTimestamp == null || TransmitTimestamp == null || DestinationTimestamp == null)
+                    throw new InvalidOperationException();
+                return (ReceiveTimestamp.Value - OriginTimestamp.Value) + (DestinationTimestamp.Value - TransmitTimestamp.Value);
+            }
+        }
+
+        /// <summary>
+        /// Offset that should be added to local time to synchronize it with server time
+        /// </summary>
+        public TimeSpan CorrectionOffset
+        {
+            get
+            {
+                if (OriginTimestamp == null || ReceiveTimestamp == null || TransmitTimestamp == null || DestinationTimestamp == null)
+                    throw new InvalidOperationException();
+                return TimeSpan.FromTicks(((ReceiveTimestamp.Value - OriginTimestamp.Value) - (DestinationTimestamp.Value - TransmitTimestamp.Value)).Ticks / 2);
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NtpPacket" /> class
@@ -117,14 +149,16 @@ namespace GuerrillaNtp
         }
 
 
-        DateTime? GetTime64(int offset)
+        DateTime? GetDateTime64(int offset)
         {
             var field = GetUInt64BE(offset);
             if (field == 0)
                 return null;
             return new DateTime(PrimeEpoch.Ticks + Convert.ToInt64(field * (1.0 / (1L << 32) * 10000000.0)));
         }
+        void SetDateTime64(int offset, DateTime? value) { SetUInt64BE(offset, value == null ? 0 : Convert.ToUInt64((value.Value.Ticks - PrimeEpoch.Ticks) * (0.0000001 * (1L << 32)))); }
         ulong GetUInt64BE(int offset) { return SwapEndianness(BitConverter.ToUInt64(Bytes, offset)); }
+        void SetUInt64BE(int offset, ulong value) { Array.Copy(BitConverter.GetBytes(SwapEndianness(value)), 0, Bytes, offset, 8); }
         int GetInt32BE(int offset) { return (int)GetUInt32BE(offset); }
         uint GetUInt32BE(int offset) { return SwapEndianness(BitConverter.ToUInt32(Bytes, offset)); }
         static uint SwapEndianness(uint x) { return ((x & 0xff) << 24) | ((x & 0xff00) << 8) | ((x & 0xff0000) >> 8) | ((x & 0xff000000) >> 24); }

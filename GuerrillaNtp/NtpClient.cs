@@ -42,17 +42,12 @@ namespace GuerrillaNtp
         public void Dispose() { UdpClient.Close(); }
 
         /// <summary>
-        /// Gets the current date and time
+        /// Queries the NTP server and returns correction offset
         /// </summary>
         /// <returns>
-        /// The current date and time
+        /// Time that should be added to local time to synchronize it with NTP server
         /// </returns>
-        public DateTime GetDateTime()
-        {
-            var start = DateTime.UtcNow;
-            var packet = Query();
-            return Query().TransmitTimestamp.Value.AddTicks((DateTime.UtcNow - start).Ticks / 2);
-        }
+        public TimeSpan GetCorrectionOffset() { return Query().CorrectionOffset; }
 
         /// <summary>
         /// Queries NTP server with configurable NTP packet
@@ -63,13 +58,16 @@ namespace GuerrillaNtp
         {
             UdpClient.Send(request.Bytes, request.Bytes.Length);
             IPEndPoint remote = null;
-            return new NtpPacket(UdpClient.Receive(ref remote));
+            var response = new NtpPacket(UdpClient.Receive(ref remote));
+            response.OriginTimestamp = request.OriginTimestamp;
+            response.DestinationTimestamp = DateTime.UtcNow;
+            return response;
         }
 
         /// <summary>
         /// Queries NTP server with default options
         /// </summary>
         /// <returns>NTP packet returned from the server</returns>
-        public NtpPacket Query() { return Query(new NtpPacket()); }
+        public NtpPacket Query() { return Query(new NtpPacket() { OriginTimestamp = DateTime.UtcNow }); }
     }
 }
