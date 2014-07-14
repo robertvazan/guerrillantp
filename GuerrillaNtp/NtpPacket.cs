@@ -22,7 +22,7 @@ namespace GuerrillaNtp
         public NtpPacket()
             : this(new byte[48])
         {
-            LeapIndicator = LeapIndicator.NoWarning;
+            LeapIndicator = NtpLeapIndicator.NoWarning;
             Mode = NtpMode.Client;
             VersionNumber = 4;
         }
@@ -55,12 +55,12 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets or sets the value indicating which, if any, warning should be sent due to an impending leap second
         /// </summary>
-        public LeapIndicator LeapIndicator
+        public NtpLeapIndicator LeapIndicator
         {
             get
             {
                 const int bitMask = 0xC0;
-                return (LeapIndicator)((Bytes[0] & bitMask) >> 6);
+                return (NtpLeapIndicator)((Bytes[0] & bitMask) >> 6);
             }
 
             set

@@ -39,7 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LeapIndicator.cs" />
+    <Compile Include="NtpLeapIndicator.cs" />
     <Compile Include="NtpMode.cs" />
     <Compile Include="NtpClient.cs" />
     <Compile Include="NtpPacket.cs" />

@@ -3,7 +3,7 @@ namespace GuerrillaNtp
     /// <summary>
     /// A set of values indicating which, if any, warning should be sent due to an impending leap second
     /// </summary>
-    public enum LeapIndicator
+    public enum NtpLeapIndicator
     {
         /// <summary>
         /// The lack of a leap second warning indicator
