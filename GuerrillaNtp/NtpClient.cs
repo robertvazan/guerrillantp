@@ -49,7 +49,9 @@ namespace GuerrillaNtp
         /// </returns>
         public DateTime GetDateTime()
         {
-            return Query().TransmitTimestamp;
+            var start = DateTime.UtcNow;
+            var packet = Query();
+            return Query().TransmitTimestamp.AddTicks((DateTime.UtcNow - start).Ticks / 2);
         }
 
         /// <summary>
