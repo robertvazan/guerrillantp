@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 namespace AngrySquirrel.Netduino.NtpClient
 {
     /// <summary>
@@ -93,7 +94,7 @@ namespace AngrySquirrel.Netduino.NtpClient
         {
             get
             {
-                var seconds = ByteHelper.ToUInt32(Bytes, 24, ByteOrder.BigEndian);
+                var seconds = ToUInt32BE(Bytes, 24);
                 return primeEpoch.AddSeconds(seconds);
             }
         }
@@ -127,7 +128,7 @@ namespace AngrySquirrel.Netduino.NtpClient
         {
             get
             {
-                var seconds = ByteHelper.ToUInt32(Bytes, 32, ByteOrder.BigEndian);
+                var seconds = ToUInt32BE(Bytes, 32);
                 return primeEpoch.AddSeconds(seconds);
             }
         }
@@ -139,7 +140,7 @@ namespace AngrySquirrel.Netduino.NtpClient
         {
             get
             {
-                return ByteHelper.ToInt32(new[] { Bytes[12], Bytes[13], Bytes[14], Bytes[15] }, byteOrder: ByteOrder.BigEndian);
+                return ToInt32BE(Bytes, 12);
             }
         }
 
@@ -150,7 +151,7 @@ namespace AngrySquirrel.Netduino.NtpClient
         {
             get
             {
-                var seconds = ByteHelper.ToUInt32(Bytes, 16, ByteOrder.BigEndian);
+                var seconds = ToUInt32BE(Bytes, 16);
                 return primeEpoch.AddSeconds(seconds);
             }
         }
@@ -162,7 +163,7 @@ namespace AngrySquirrel.Netduino.NtpClient
         {
             get
             {
-                return ByteHelper.ToInt32(new[] { Bytes[4], Bytes[5], Bytes[6], Bytes[7] }, byteOrder: ByteOrder.BigEndian);
+                return ToInt32BE(Bytes, 4);
             }
         }
 
@@ -173,7 +174,7 @@ namespace AngrySquirrel.Netduino.NtpClient
         {
             get
             {
-                return ByteHelper.ToInt32(new[] { Bytes[8], Bytes[9], Bytes[10], Bytes[11] }, byteOrder: ByteOrder.BigEndian);
+                return ToInt32BE(Bytes, 8);
             }
         }
 
@@ -195,7 +196,7 @@ namespace AngrySquirrel.Netduino.NtpClient
         {
             get
             {
-                var seconds = ByteHelper.ToUInt32(Bytes, 40, ByteOrder.BigEndian);
+                var seconds = ToUInt32BE(Bytes, 40);
                 return new DateTime(1900, 1, 1).AddSeconds(seconds);
             }
         }
@@ -219,5 +220,8 @@ namespace AngrySquirrel.Netduino.NtpClient
         }
 
         #endregion
+
+        static int ToInt32BE(byte[] bytes, int offset) { return IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytes, offset)); }
+        static uint ToUInt32BE(byte[] bytes, int offset) { return (uint)ToUInt32BE(bytes, offset); }
     }
 }
