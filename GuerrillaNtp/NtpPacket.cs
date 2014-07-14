@@ -222,7 +222,8 @@ namespace GuerrillaNtp
 
         #endregion
 
-        static int ToInt32BE(byte[] bytes, int offset) { return IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytes, offset)); }
-        static uint ToUInt32BE(byte[] bytes, int offset) { return (uint)ToUInt32BE(bytes, offset); }
+        static int ToInt32BE(byte[] bytes, int offset) { return (int)ToUInt32BE(bytes, offset); }
+        static uint ToUInt32BE(byte[] bytes, int offset) { return SwapEndianness(BitConverter.ToUInt32(bytes, offset)); }
+        static uint SwapEndianness(uint x) { return ((x & 0xff) << 24) | ((x & 0xff00) << 8) | ((x & 0xff0000) >> 8) | ((x & 0xff000000) >> 24); }
     }
 }
