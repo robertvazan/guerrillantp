@@ -25,6 +25,15 @@ namespace GuerrillaNtp
         }
 
         /// <summary>
+        /// Gets or sets the version number
+        /// </summary>
+        public int VersionNumber
+        {
+            get { return (Bytes[0] & 0x38) >> 3; }
+            set { Bytes[0] = (byte)((Bytes[0] & ~0x38) | value << 3); }
+        }
+
+        /// <summary>
         /// Gets or sets the association mode
         /// </summary>
         public NtpMode Mode
@@ -34,34 +43,19 @@ namespace GuerrillaNtp
         }
 
         /// <summary>
-        /// Gets the date and time this packet left the server
+        /// Gets the server's distance from the reference clock
         /// </summary>
-        public DateTime OriginTimestamp { get { return GetTime64(24); } }
+        public int Stratum { get { return Bytes[1]; } }
 
         /// <summary>
         /// Gets the polling interval (in log₂ seconds)
         /// </summary>
-        public byte Poll { get { return Bytes[2]; } }
+        public int Poll { get { return Bytes[2]; } }
 
         /// <summary>
         /// Gets the precision of the system clock (in log₂ seconds)
         /// </summary>
-        public byte Precision { get { return Bytes[3]; } }
-
-        /// <summary>
-        /// Gets the date and time this packet was received by the server
-        /// </summary>
-        public DateTime ReceiveTimestamp { get { return GetTime64(32); } }
-
-        /// <summary>
-        /// Gets the ID of the server or reference clock
-        /// </summary>
-        public int ReferenceId { get { return GetInt32BE(12); } }
-
-        /// <summary>
-        /// Gets the date and time the server was last set or corrected
-        /// </summary>
-        public DateTime ReferenceTimestamp { get { return GetTime64(16); } }
+        public int Precision { get { return Bytes[3]; } }
 
         /// <summary>
         /// Gets the total round trip delay from the server to the reference clock
@@ -74,23 +68,29 @@ namespace GuerrillaNtp
         public int RootDispersion { get { return GetInt32BE(8); } }
 
         /// <summary>
-        /// Gets the server's distance from the reference clock
+        /// Gets the ID of the server or reference clock
         /// </summary>
-        public byte Stratum { get { return Bytes[1]; } }
+        public uint ReferenceId { get { return GetUInt32BE(12); } }
+
+        /// <summary>
+        /// Gets the date and time the server was last set or corrected
+        /// </summary>
+        public DateTime ReferenceTimestamp { get { return GetTime64(16); } }
+
+        /// <summary>
+        /// Gets the date and time this packet left the server
+        /// </summary>
+        public DateTime OriginTimestamp { get { return GetTime64(24); } }
+
+        /// <summary>
+        /// Gets the date and time this packet was received by the server
+        /// </summary>
+        public DateTime ReceiveTimestamp { get { return GetTime64(32); } }
 
         /// <summary>
         /// Gets the date and time that the packet was transmitted from the server
         /// </summary>
         public DateTime TransmitTimestamp { get { return GetTime64(40); } }
-
-        /// <summary>
-        /// Gets or sets the version number
-        /// </summary>
-        public int VersionNumber
-        {
-            get { return (Bytes[0] & 0x38) >> 3; }
-            set { Bytes[0] = (byte)((Bytes[0] & ~0x38) | value << 3); }
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NtpPacket" /> class
