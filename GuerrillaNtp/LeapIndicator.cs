@@ -1,4 +1,4 @@
-namespace AngrySquirrel.Netduino.NtpClient
+namespace GuerrillaNtp
 {
     /// <summary>
     /// A set of values indicating which, if any, warning should be sent due to an impending leap second

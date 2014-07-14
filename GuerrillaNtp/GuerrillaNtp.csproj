@@ -7,8 +7,8 @@
     <ProjectGuid>{891A9566-709D-4355-9A1C-FBD59A89D7AE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AngrySquirrel.Netduino.NtpClient</RootNamespace>
-    <AssemblyName>AngrySquirrel.Netduino.NtpClient</AssemblyName>
+    <RootNamespace>GuerrillaNtp</RootNamespace>
+    <AssemblyName>GuerrillaNtp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

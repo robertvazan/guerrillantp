@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
-namespace AngrySquirrel.Netduino.NtpClient
+
+namespace GuerrillaNtp
 {
     /// <summary>
     /// Represents a packet for communications to and from a network time server

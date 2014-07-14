@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace AngrySquirrel.Netduino.NtpClient
+namespace GuerrillaNtp
 {
     /// <summary>
     /// Represents a client used to connect to a network time server

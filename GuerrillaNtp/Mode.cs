@@ -1,4 +1,4 @@
-namespace AngrySquirrel.Netduino.NtpClient
+namespace GuerrillaNtp
 {
     /// <summary>
     /// A set of values indicating how an NTP server can be associated with another
