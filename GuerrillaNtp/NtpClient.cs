@@ -8,57 +8,66 @@ namespace GuerrillaNtp
     /// <summary>
     /// Represents a client used to connect to a network time server
     /// </summary>
-    public static class NtpClient
+    public class NtpClient : IDisposable
     {
+        readonly UdpClient UdpClient;
+
+        /// <summary>
+        /// Creates new NtpClient from server endpoint
+        /// </summary>
+        /// <param name="endpoint">Endpoint of the remote NTP server</param>
+        public NtpClient(IPEndPoint endpoint)
+        {
+            UdpClient = new UdpClient();
+            UdpClient.Connect(endpoint);
+        }
+
+        /// <summary>
+        /// Creates new NtpClient from server's IP address and optional port
+        /// </summary>
+        /// <param name="address">IP address of remote NTP server</param>
+        /// <param name="port">Port of remote NTP server. Default is 123.</param>
+        public NtpClient(IPAddress address, int port = 123) : this(new IPEndPoint(address, port)) { }
+
+        /// <summary>
+        /// Creates new NtpClient from server's host name and optional port
+        /// </summary>
+        /// <param name="host">The hostname of the NTP server to connect to</param>
+        /// <param name="port">The port of the NTP server to connect to</param>
+        public NtpClient(string host, int port = 123) : this(Dns.GetHostAddresses(host).First(), port) { }
+
+        /// <summary>
+        /// Releases all resources held by NtpClient
+        /// </summary>
+        public void Dispose() { UdpClient.Close(); }
+
         /// <summary>
         /// Gets the current date and time
         /// </summary>
         /// <returns>
         /// The current date and time
         /// </returns>
-        public static DateTime GetDateTime()
+        public DateTime GetDateTime()
         {
-            return Send(new NtpPacket
-            {
-                LeapIndicator = NtpLeapIndicator.NoWarning, 
-                Mode = NtpMode.Client, 
-                VersionNumber = 4
-            }).TransmitTimestamp;
+            return Query().TransmitTimestamp;
         }
 
         /// <summary>
-        /// Gets the current date and time using the given <see cref="NtpPacket"/>
+        /// Queries NTP server with configurable NTP packet
         /// </summary>
-        /// <param name="ntpPacket">
-        /// The <see cref="NtpPacket"/> object to use when querying the network time server
-        /// </param>
-        /// <param name="host">
-        /// The hostname of the network time server to connect to
-        /// </param>
-        /// <param name="port">
-        /// The port of the network time server to connect to
-        /// </param>
-        /// <returns>
-        /// The response from the NTP server
-        /// </returns>
-        public static NtpPacket Send(NtpPacket ntpPacket, string host = "time.nist.gov", int port = 123)
+        /// <param name="request">NTP packet to use when querying the network time server </param>
+        /// <returns>The response from the NTP server</returns>
+        public NtpPacket Query(NtpPacket request)
         {
-            var address = Dns.GetHostEntry(host).AddressList.FirstOrDefault();
-            if (address != null)
-            {
-                var ipEndPoint = new IPEndPoint(address, port);
-                using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
-                {
-                    socket.Connect(ipEndPoint);
-                    socket.Send(ntpPacket.Bytes);
-
-                    var buffer = new byte[48];
-                    socket.Receive(buffer);
-
-                    ntpPacket = new NtpPacket(buffer);
-                }
-            }
-            return ntpPacket;
+            UdpClient.Send(request.Bytes, request.Bytes.Length);
+            IPEndPoint remote = null;
+            return new NtpPacket(UdpClient.Receive(ref remote));
         }
+
+        /// <summary>
+        /// Queries NTP server with default options
+        /// </summary>
+        /// <returns>NTP packet returned from the server</returns>
+        public NtpPacket Query() { return Query(new NtpPacket()); }
     }
 }
