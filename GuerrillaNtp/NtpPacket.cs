@@ -130,7 +130,6 @@ namespace GuerrillaNtp
         public NtpPacket()
             : this(new byte[48])
         {
-            LeapIndicator = NtpLeapIndicator.NoWarning;
             Mode = NtpMode.Client;
             VersionNumber = 4;
         }
@@ -147,7 +146,6 @@ namespace GuerrillaNtp
                 throw new ArgumentOutOfRangeException("bytes", "The byte array must be at least length 48.");
             Bytes = bytes;
         }
-
 
         DateTime? GetDateTime64(int offset)
         {
