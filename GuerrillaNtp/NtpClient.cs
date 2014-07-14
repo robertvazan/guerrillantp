@@ -51,7 +51,7 @@ namespace GuerrillaNtp
         {
             var start = DateTime.UtcNow;
             var packet = Query();
-            return Query().TransmitTimestamp.AddTicks((DateTime.UtcNow - start).Ticks / 2);
+            return Query().TransmitTimestamp.Value.AddTicks((DateTime.UtcNow - start).Ticks / 2);
         }
 
         /// <summary>

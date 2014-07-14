@@ -75,22 +75,22 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the date and time the server was last set or corrected
         /// </summary>
-        public DateTime ReferenceTimestamp { get { return GetTime64(16); } }
+        public DateTime? ReferenceTimestamp { get { return GetTime64(16); } }
 
         /// <summary>
         /// Gets the date and time this packet left the server
         /// </summary>
-        public DateTime OriginTimestamp { get { return GetTime64(24); } }
+        public DateTime? OriginTimestamp { get { return GetTime64(24); } }
 
         /// <summary>
         /// Gets the date and time this packet was received by the server
         /// </summary>
-        public DateTime ReceiveTimestamp { get { return GetTime64(32); } }
+        public DateTime? ReceiveTimestamp { get { return GetTime64(32); } }
 
         /// <summary>
         /// Gets the date and time that the packet was transmitted from the server
         /// </summary>
-        public DateTime TransmitTimestamp { get { return GetTime64(40); } }
+        public DateTime? TransmitTimestamp { get { return GetTime64(40); } }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NtpPacket" /> class
@@ -117,7 +117,13 @@ namespace GuerrillaNtp
         }
 
 
-        DateTime GetTime64(int offset) { return new DateTime(PrimeEpoch.Ticks + Convert.ToInt64(GetUInt64BE(offset) * (1.0 / (1L << 32) * 10000000.0))); }
+        DateTime? GetTime64(int offset)
+        {
+            var field = GetUInt64BE(offset);
+            if (field == 0)
+                return null;
+            return new DateTime(PrimeEpoch.Ticks + Convert.ToInt64(field * (1.0 / (1L << 32) * 10000000.0)));
+        }
         ulong GetUInt64BE(int offset) { return SwapEndianness(BitConverter.ToUInt64(Bytes, offset)); }
         int GetInt32BE(int offset) { return (int)GetUInt32BE(offset); }
         uint GetUInt32BE(int offset) { return SwapEndianness(BitConverter.ToUInt32(Bytes, offset)); }
