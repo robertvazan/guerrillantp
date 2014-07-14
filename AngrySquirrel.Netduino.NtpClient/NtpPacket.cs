@@ -1,6 +1,4 @@
 ﻿using System;
-using AngrySquirrel.Netduino.Utilities;
-
 namespace AngrySquirrel.Netduino.NtpClient
 {
     /// <summary>
