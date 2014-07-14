@@ -16,6 +16,7 @@ namespace NtpCommand
             {
                 using (var ntp = new NtpClient(host))
                 {
+                    ntp.Timeout = TimeSpan.FromSeconds(5);
                     var packet = ntp.Query();
                     Console.WriteLine(host);
                     Console.WriteLine("-------------------------------------");

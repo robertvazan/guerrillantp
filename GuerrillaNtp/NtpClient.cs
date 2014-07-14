@@ -12,6 +12,17 @@ namespace GuerrillaNtp
     {
         readonly UdpClient UdpClient;
 
+        public TimeSpan Timeout
+        {
+            get { return TimeSpan.FromMilliseconds(UdpClient.Client.ReceiveTimeout); }
+            set
+            {
+                if (value < TimeSpan.FromMilliseconds(1))
+                    throw new ArgumentOutOfRangeException();
+                UdpClient.Client.ReceiveTimeout = Convert.ToInt32(value.TotalMilliseconds);
+            }
+        }
+
         /// <summary>
         /// Creates new NtpClient from server endpoint
         /// </summary>
@@ -19,6 +30,7 @@ namespace GuerrillaNtp
         public NtpClient(IPEndPoint endpoint)
         {
             UdpClient = new UdpClient();
+            UdpClient.Client.ReceiveTimeout = 15000;
             UdpClient.Connect(endpoint);
         }
 
