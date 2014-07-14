@@ -8,31 +8,7 @@ namespace GuerrillaNtp
     /// </summary>
     public class NtpPacket
     {
-        readonly DateTime primeEpoch = new DateTime(1900, 1, 1);
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NtpPacket" /> class
-        /// </summary>
-        public NtpPacket()
-            : this(new byte[48])
-        {
-            LeapIndicator = NtpLeapIndicator.NoWarning;
-            Mode = NtpMode.Client;
-            VersionNumber = 4;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NtpPacket"/> class
-        /// </summary>
-        /// <param name="bytes">
-        /// A byte array representing an NTP packet
-        /// </param>
-        public NtpPacket(byte[] bytes)
-        {
-            if (bytes.Length < 48)
-                throw new ArgumentOutOfRangeException("bytes", "The byte array must be at least length 48.");
-            Bytes = bytes;
-        }
+        readonly DateTime PrimeEpoch = new DateTime(1900, 1, 1);
 
         /// <summary>
         /// Gets the byte array representing this packet
@@ -60,7 +36,7 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the date and time this packet left the server
         /// </summary>
-        public DateTime OriginTimestamp { get { return primeEpoch.AddSeconds(ToUInt32BE(Bytes, 24)); } }
+        public DateTime OriginTimestamp { get { return PrimeEpoch.AddSeconds(ToUInt32BE(Bytes, 24)); } }
 
         /// <summary>
         /// Gets the polling interval (in log₂ seconds)
@@ -75,7 +51,7 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the date and time this packet was received by the server
         /// </summary>
-        public DateTime ReceiveTimestamp { get { return primeEpoch.AddSeconds(ToUInt32BE(Bytes, 32)); } }
+        public DateTime ReceiveTimestamp { get { return PrimeEpoch.AddSeconds(ToUInt32BE(Bytes, 32)); } }
 
         /// <summary>
         /// Gets the ID of the server or reference clock
@@ -85,7 +61,7 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the date and time the server was last set or corrected
         /// </summary>
-        public DateTime ReferenceTimestamp { get { return primeEpoch.AddSeconds(ToUInt32BE(Bytes, 16)); } }
+        public DateTime ReferenceTimestamp { get { return PrimeEpoch.AddSeconds(ToUInt32BE(Bytes, 16)); } }
 
         /// <summary>
         /// Gets the total round trip delay from the server to the reference clock
@@ -114,6 +90,30 @@ namespace GuerrillaNtp
         {
             get { return (Bytes[0] & 0x38) >> 3; }
             set { Bytes[0] = (byte)((Bytes[0] & ~0x38) | value << 3); }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NtpPacket" /> class
+        /// </summary>
+        public NtpPacket()
+            : this(new byte[48])
+        {
+            LeapIndicator = NtpLeapIndicator.NoWarning;
+            Mode = NtpMode.Client;
+            VersionNumber = 4;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NtpPacket"/> class
+        /// </summary>
+        /// <param name="bytes">
+        /// A byte array representing an NTP packet
+        /// </param>
+        public NtpPacket(byte[] bytes)
+        {
+            if (bytes.Length < 48)
+                throw new ArgumentOutOfRangeException("bytes", "The byte array must be at least length 48.");
+            Bytes = bytes;
         }
 
         static int ToInt32BE(byte[] bytes, int offset) { return (int)ToUInt32BE(bytes, offset); }
