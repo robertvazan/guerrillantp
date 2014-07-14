@@ -36,7 +36,7 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the date and time this packet left the server
         /// </summary>
-        public DateTime OriginTimestamp { get { return PrimeEpoch.AddSeconds(ToUInt32BE(Bytes, 24)); } }
+        public DateTime OriginTimestamp { get { return PrimeEpoch.AddSeconds(GetUInt32BE(24)); } }
 
         /// <summary>
         /// Gets the polling interval (in log₂ seconds)
@@ -51,27 +51,27 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the date and time this packet was received by the server
         /// </summary>
-        public DateTime ReceiveTimestamp { get { return PrimeEpoch.AddSeconds(ToUInt32BE(Bytes, 32)); } }
+        public DateTime ReceiveTimestamp { get { return PrimeEpoch.AddSeconds(GetUInt32BE(32)); } }
 
         /// <summary>
         /// Gets the ID of the server or reference clock
         /// </summary>
-        public int ReferenceId { get { return ToInt32BE(Bytes, 12); } }
+        public int ReferenceId { get { return GetInt32BE(12); } }
 
         /// <summary>
         /// Gets the date and time the server was last set or corrected
         /// </summary>
-        public DateTime ReferenceTimestamp { get { return PrimeEpoch.AddSeconds(ToUInt32BE(Bytes, 16)); } }
+        public DateTime ReferenceTimestamp { get { return PrimeEpoch.AddSeconds(GetUInt32BE(16)); } }
 
         /// <summary>
         /// Gets the total round trip delay from the server to the reference clock
         /// </summary>
-        public int RootDelay { get { return ToInt32BE(Bytes, 4); } }
+        public int RootDelay { get { return GetInt32BE(4); } }
 
         /// <summary>
         /// Gets the amount of jitter the server observes in the reference clock
         /// </summary>
-        public int RootDispersion { get { return ToInt32BE(Bytes, 8); } }
+        public int RootDispersion { get { return GetInt32BE(8); } }
 
         /// <summary>
         /// Gets the server's distance from the reference clock
@@ -81,7 +81,7 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the date and time that the packet was transmitted from the server
         /// </summary>
-        public DateTime TransmitTimestamp { get { return new DateTime(1900, 1, 1).AddSeconds(ToUInt32BE(Bytes, 40)); } }
+        public DateTime TransmitTimestamp { get { return new DateTime(1900, 1, 1).AddSeconds(GetUInt32BE(40)); } }
 
         /// <summary>
         /// Gets or sets the version number
@@ -116,8 +116,8 @@ namespace GuerrillaNtp
             Bytes = bytes;
         }
 
-        static int ToInt32BE(byte[] bytes, int offset) { return (int)ToUInt32BE(bytes, offset); }
-        static uint ToUInt32BE(byte[] bytes, int offset) { return SwapEndianness(BitConverter.ToUInt32(bytes, offset)); }
+        int GetInt32BE(int offset) { return (int)GetUInt32BE(offset); }
+        uint GetUInt32BE(int offset) { return SwapEndianness(BitConverter.ToUInt32(Bytes, offset)); }
         static uint SwapEndianness(uint x) { return ((x & 0xff) << 24) | ((x & 0xff00) << 8) | ((x & 0xff0000) >> 8) | ((x & 0xff000000) >> 24); }
     }
 }
