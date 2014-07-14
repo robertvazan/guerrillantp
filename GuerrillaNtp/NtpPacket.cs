@@ -36,7 +36,7 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the date and time this packet left the server
         /// </summary>
-        public DateTime OriginTimestamp { get { return PrimeEpoch.AddSeconds(GetUInt32BE(24)); } }
+        public DateTime OriginTimestamp { get { return GetTime64(24); } }
 
         /// <summary>
         /// Gets the polling interval (in log₂ seconds)
@@ -51,7 +51,7 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the date and time this packet was received by the server
         /// </summary>
-        public DateTime ReceiveTimestamp { get { return PrimeEpoch.AddSeconds(GetUInt32BE(32)); } }
+        public DateTime ReceiveTimestamp { get { return GetTime64(32); } }
 
         /// <summary>
         /// Gets the ID of the server or reference clock
@@ -61,7 +61,7 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the date and time the server was last set or corrected
         /// </summary>
-        public DateTime ReferenceTimestamp { get { return PrimeEpoch.AddSeconds(GetUInt32BE(16)); } }
+        public DateTime ReferenceTimestamp { get { return GetTime64(16); } }
 
         /// <summary>
         /// Gets the total round trip delay from the server to the reference clock
@@ -81,7 +81,7 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the date and time that the packet was transmitted from the server
         /// </summary>
-        public DateTime TransmitTimestamp { get { return new DateTime(1900, 1, 1).AddSeconds(GetUInt32BE(40)); } }
+        public DateTime TransmitTimestamp { get { return GetTime64(40); } }
 
         /// <summary>
         /// Gets or sets the version number
@@ -116,8 +116,12 @@ namespace GuerrillaNtp
             Bytes = bytes;
         }
 
+
+        DateTime GetTime64(int offset) { return new DateTime(PrimeEpoch.Ticks + Convert.ToInt64(GetUInt64BE(offset) * (1.0 / (1L << 32) * 10000000.0))); }
+        ulong GetUInt64BE(int offset) { return SwapEndianness(BitConverter.ToUInt64(Bytes, offset)); }
         int GetInt32BE(int offset) { return (int)GetUInt32BE(offset); }
         uint GetUInt32BE(int offset) { return SwapEndianness(BitConverter.ToUInt32(Bytes, offset)); }
         static uint SwapEndianness(uint x) { return ((x & 0xff) << 24) | ((x & 0xff00) << 8) | ((x & 0xff0000) >> 8) | ((x & 0xff000000) >> 24); }
+        static ulong SwapEndianness(ulong x) { return (SwapEndianness((uint)x) << 32) | SwapEndianness((uint)(x >> 32)); }
     }
 }
