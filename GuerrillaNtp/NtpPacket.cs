@@ -8,13 +8,7 @@ namespace GuerrillaNtp
     /// </summary>
     public class NtpPacket
     {
-        #region Fields
-
-        private readonly DateTime primeEpoch = new DateTime(1900, 1, 1);
-
-        #endregion
-
-        #region Constructors and Destructors
+        readonly DateTime primeEpoch = new DateTime(1900, 1, 1);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NtpPacket" /> class
@@ -36,16 +30,9 @@ namespace GuerrillaNtp
         public NtpPacket(byte[] bytes)
         {
             if (bytes.Length < 48)
-            {
                 throw new ArgumentOutOfRangeException("bytes", "The byte array must be at least length 48.");
-            }
-
             Bytes = bytes;
         }
-
-        #endregion
-
-        #region Public Properties
 
         /// <summary>
         /// Gets the byte array representing this packet
@@ -57,17 +44,8 @@ namespace GuerrillaNtp
         /// </summary>
         public NtpLeapIndicator LeapIndicator
         {
-            get
-            {
-                const int bitMask = 0xC0;
-                return (NtpLeapIndicator)((Bytes[0] & bitMask) >> 6);
-            }
-
-            set
-            {
-                const int bitMask = 0xC0;
-                Bytes[0] = (byte)((Bytes[0] & ~bitMask) | (int)value << 6);
-            }
+            get { return (NtpLeapIndicator)((Bytes[0] & 0xC0) >> 6); }
+            set { Bytes[0] = (byte)((Bytes[0] & ~0xC0) | (int)value << 6); }
         }
 
         /// <summary>
@@ -75,152 +53,68 @@ namespace GuerrillaNtp
         /// </summary>
         public NtpMode Mode
         {
-            get
-            {
-                const int bitMask = 0x07;
-                return (NtpMode)(Bytes[0] & bitMask);
-            }
-
-            set
-            {
-                const int bitMask = 0x07;
-                Bytes[0] = (byte)((Bytes[0] & ~bitMask) | (int)value);
-            }
+            get { return (NtpMode)(Bytes[0] & 0x07); }
+            set { Bytes[0] = (byte)((Bytes[0] & ~0x07) | (int)value); }
         }
 
         /// <summary>
         /// Gets the date and time this packet left the server
         /// </summary>
-        public DateTime OriginTimestamp
-        {
-            get
-            {
-                var seconds = ToUInt32BE(Bytes, 24);
-                return primeEpoch.AddSeconds(seconds);
-            }
-        }
+        public DateTime OriginTimestamp { get { return primeEpoch.AddSeconds(ToUInt32BE(Bytes, 24)); } }
 
         /// <summary>
         /// Gets the polling interval (in log₂ seconds)
         /// </summary>
-        public byte Poll
-        {
-            get
-            {
-                return Bytes[2];
-            }
-        }
+        public byte Poll { get { return Bytes[2]; } }
 
         /// <summary>
         /// Gets the precision of the system clock (in log₂ seconds)
         /// </summary>
-        public byte Precision
-        {
-            get
-            {
-                return Bytes[3];
-            }
-        }
+        public byte Precision { get { return Bytes[3]; } }
 
         /// <summary>
         /// Gets the date and time this packet was received by the server
         /// </summary>
-        public DateTime ReceiveTimestamp
-        {
-            get
-            {
-                var seconds = ToUInt32BE(Bytes, 32);
-                return primeEpoch.AddSeconds(seconds);
-            }
-        }
+        public DateTime ReceiveTimestamp { get { return primeEpoch.AddSeconds(ToUInt32BE(Bytes, 32)); } }
 
         /// <summary>
         /// Gets the ID of the server or reference clock
         /// </summary>
-        public int ReferenceId
-        {
-            get
-            {
-                return ToInt32BE(Bytes, 12);
-            }
-        }
+        public int ReferenceId { get { return ToInt32BE(Bytes, 12); } }
 
         /// <summary>
         /// Gets the date and time the server was last set or corrected
         /// </summary>
-        public DateTime ReferenceTimestamp
-        {
-            get
-            {
-                var seconds = ToUInt32BE(Bytes, 16);
-                return primeEpoch.AddSeconds(seconds);
-            }
-        }
+        public DateTime ReferenceTimestamp { get { return primeEpoch.AddSeconds(ToUInt32BE(Bytes, 16)); } }
 
         /// <summary>
         /// Gets the total round trip delay from the server to the reference clock
         /// </summary>
-        public int RootDelay
-        {
-            get
-            {
-                return ToInt32BE(Bytes, 4);
-            }
-        }
+        public int RootDelay { get { return ToInt32BE(Bytes, 4); } }
 
         /// <summary>
         /// Gets the amount of jitter the server observes in the reference clock
         /// </summary>
-        public int RootDispersion
-        {
-            get
-            {
-                return ToInt32BE(Bytes, 8);
-            }
-        }
+        public int RootDispersion { get { return ToInt32BE(Bytes, 8); } }
 
         /// <summary>
         /// Gets the server's distance from the reference clock
         /// </summary>
-        public byte Stratum
-        {
-            get
-            {
-                return Bytes[1];
-            }
-        }
+        public byte Stratum { get { return Bytes[1]; } }
 
         /// <summary>
         /// Gets the date and time that the packet was transmitted from the server
         /// </summary>
-        public DateTime TransmitTimestamp
-        {
-            get
-            {
-                var seconds = ToUInt32BE(Bytes, 40);
-                return new DateTime(1900, 1, 1).AddSeconds(seconds);
-            }
-        }
+        public DateTime TransmitTimestamp { get { return new DateTime(1900, 1, 1).AddSeconds(ToUInt32BE(Bytes, 40)); } }
 
         /// <summary>
         /// Gets or sets the version number
         /// </summary>
         public int VersionNumber
         {
-            get
-            {
-                const int bitMask = 0x38;
-                return (Bytes[0] & bitMask) >> 3;
-            }
-
-            set
-            {
-                const int bitMask = 0x38;
-                Bytes[0] = (byte)((Bytes[0] & ~bitMask) | value << 3);
-            }
+            get { return (Bytes[0] & 0x38) >> 3; }
+            set { Bytes[0] = (byte)((Bytes[0] & ~0x38) | value << 3); }
         }
-
-        #endregion
 
         static int ToInt32BE(byte[] bytes, int offset) { return (int)ToUInt32BE(bytes, offset); }
         static uint ToUInt32BE(byte[] bytes, int offset) { return SwapEndianness(BitConverter.ToUInt32(bytes, offset)); }

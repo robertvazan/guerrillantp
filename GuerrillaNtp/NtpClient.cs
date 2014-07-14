@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
@@ -9,8 +10,6 @@ namespace GuerrillaNtp
     /// </summary>
     public static class NtpClient
     {
-        #region Public Methods and Operators
-
         /// <summary>
         /// Gets the current date and time
         /// </summary>
@@ -19,14 +18,12 @@ namespace GuerrillaNtp
         /// </returns>
         public static DateTime GetDateTime()
         {
-            var ntpPacket = new NtpPacket
-                {
-                    LeapIndicator = NtpLeapIndicator.NoWarning, 
-                    Mode = NtpMode.Client, 
-                    VersionNumber = 4
-                };
-
-            return Send(ntpPacket).TransmitTimestamp;
+            return Send(new NtpPacket
+            {
+                LeapIndicator = NtpLeapIndicator.NoWarning, 
+                Mode = NtpMode.Client, 
+                VersionNumber = 4
+            }).TransmitTimestamp;
         }
 
         /// <summary>
@@ -46,36 +43,22 @@ namespace GuerrillaNtp
         /// </returns>
         public static NtpPacket Send(NtpPacket ntpPacket, string host = "time.nist.gov", int port = 123)
         {
-            var hostEntry = Dns.GetHostEntry(host);
-            foreach (var address in hostEntry.AddressList)
+            var address = Dns.GetHostEntry(host).AddressList.FirstOrDefault();
+            if (address != null)
             {
-                if (address != null)
+                var ipEndPoint = new IPEndPoint(address, port);
+                using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
                 {
-                    var ipEndPoint = new IPEndPoint(address, port);
+                    socket.Connect(ipEndPoint);
+                    socket.Send(ntpPacket.Bytes);
 
-                    var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                    try
-                    {
-                        socket.Connect(ipEndPoint);
-                        socket.Send(ntpPacket.Bytes);
+                    var buffer = new byte[48];
+                    socket.Receive(buffer);
 
-                        var buffer = new byte[48];
-                        socket.Receive(buffer);
-
-                        ntpPacket = new NtpPacket(buffer);
-                    }
-                    finally
-                    {
-                        socket.Close();
-                    }
-
-                    break;
+                    ntpPacket = new NtpPacket(buffer);
                 }
             }
-
             return ntpPacket;
         }
-
-        #endregion
     }
 }

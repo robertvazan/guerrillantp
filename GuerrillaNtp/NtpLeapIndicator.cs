@@ -6,11 +6,6 @@ namespace GuerrillaNtp
     public enum NtpLeapIndicator
     {
         /// <summary>
-        /// The lack of a leap second warning indicator
-        /// </summary>
-        None = -1, 
-
-        /// <summary>
         /// No warning should be sent
         /// </summary>
         NoWarning, 
