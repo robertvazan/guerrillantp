@@ -160,6 +160,6 @@ namespace GuerrillaNtp
         int GetInt32BE(int offset) { return (int)GetUInt32BE(offset); }
         uint GetUInt32BE(int offset) { return SwapEndianness(BitConverter.ToUInt32(Bytes, offset)); }
         static uint SwapEndianness(uint x) { return ((x & 0xff) << 24) | ((x & 0xff00) << 8) | ((x & 0xff0000) >> 8) | ((x & 0xff000000) >> 24); }
-        static ulong SwapEndianness(ulong x) { return (SwapEndianness((uint)x) << 32) | SwapEndianness((uint)(x >> 32)); }
+        static ulong SwapEndianness(ulong x) { return ((ulong)SwapEndianness((uint)x) << 32) | SwapEndianness((uint)(x >> 32)); }
     }
 }
