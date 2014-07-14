@@ -3,7 +3,7 @@ namespace GuerrillaNtp
     /// <summary>
     /// A set of values indicating how an NTP server can be associated with another
     /// </summary>
-    public enum Mode
+    public enum NtpMode
     {
         /// <summary>
         /// The NTP host is configured as a client

@@ -23,7 +23,7 @@ namespace GuerrillaNtp
             : this(new byte[48])
         {
             LeapIndicator = LeapIndicator.NoWarning;
-            Mode = Mode.Client;
+            Mode = NtpMode.Client;
             VersionNumber = 4;
         }
 
@@ -73,12 +73,12 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets or sets the association mode
         /// </summary>
-        public Mode Mode
+        public NtpMode Mode
         {
             get
             {
                 const int bitMask = 0x07;
-                return (Mode)(Bytes[0] & bitMask);
+                return (NtpMode)(Bytes[0] & bitMask);
             }
 
             set

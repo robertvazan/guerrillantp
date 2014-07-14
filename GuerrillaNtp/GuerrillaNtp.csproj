@@ -40,7 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LeapIndicator.cs" />
-    <Compile Include="Mode.cs" />
+    <Compile Include="NtpMode.cs" />
     <Compile Include="NtpClient.cs" />
     <Compile Include="NtpPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
