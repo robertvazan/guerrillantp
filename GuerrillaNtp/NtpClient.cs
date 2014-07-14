@@ -22,7 +22,7 @@ namespace GuerrillaNtp
             var ntpPacket = new NtpPacket
                 {
                     LeapIndicator = LeapIndicator.NoWarning, 
-                    Mode = Mode.Client, 
+                    Mode = NtpMode.Client, 
                     VersionNumber = 4
                 };
 
