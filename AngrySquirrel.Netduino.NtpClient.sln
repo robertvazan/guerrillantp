@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngrySquirrel.Netduino.NtpClient", "AngrySquirrel.Netduino.NtpClient\AngrySquirrel.Netduino.NtpClient.csproj", "{AC575962-8AFA-4A27-80B6-17641C39A116}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "Example\Example.csproj", "{1D91F643-829C-4D6B-B323-C72FE07FAF4D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CBDDDD07-AAE9-462E-B1E3-CB9C4CD3946E}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet.proj = NuGet.proj
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AC575962-8AFA-4A27-80B6-17641C39A116}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC575962-8AFA-4A27-80B6-17641C39A116}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC575962-8AFA-4A27-80B6-17641C39A116}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC575962-8AFA-4A27-80B6-17641C39A116}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D91F643-829C-4D6B-B323-C72FE07FAF4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D91F643-829C-4D6B-B323-C72FE07FAF4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D91F643-829C-4D6B-B323-C72FE07FAF4D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{1D91F643-829C-4D6B-B323-C72FE07FAF4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D91F643-829C-4D6B-B323-C72FE07FAF4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D91F643-829C-4D6B-B323-C72FE07FAF4D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
