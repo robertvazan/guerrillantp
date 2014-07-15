@@ -3,12 +3,12 @@
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AngrySquirrel.Netduino.NtpClient")]
-[assembly: AssemblyDescription("A library for interacting with a network time server")]
+[assembly: AssemblyTitle("GuerrillaNtp")]
+[assembly: AssemblyDescription("App-embedded NTP client for time-sensitive apps")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Dallas Edwards")]
-[assembly: AssemblyProduct("AngrySquirrel.Netduino.NtpClient")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyCompany("Robert Važan")]
+[assembly: AssemblyProduct("GuerrillaNtp")]
+[assembly: AssemblyCopyright("Copyright ©  2014 Robert Važan")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
