@@ -143,7 +143,7 @@ namespace GuerrillaNtp
         public NtpPacket(byte[] bytes)
         {
             if (bytes.Length < 48)
-                throw new ArgumentOutOfRangeException("bytes", "The byte array must be at least length 48.");
+                throw new ArgumentOutOfRangeException(nameof(bytes), "The byte array must be at least length 48.");
             Bytes = bytes;
         }
 
