@@ -7,21 +7,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NtpCommand", "NtpCommand\Nt
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x86 = Debug|x86
-		Release|x86 = Release|x86
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AD13EE25-66CE-4726-84F6-237569258FAE}.Debug|x86.ActiveCfg = Debug|x86
-		{AD13EE25-66CE-4726-84F6-237569258FAE}.Debug|x86.Build.0 = Debug|x86
-		{AD13EE25-66CE-4726-84F6-237569258FAE}.Release|x86.ActiveCfg = Release|x86
-		{AD13EE25-66CE-4726-84F6-237569258FAE}.Release|x86.Build.0 = Release|x86
-		{8522C09B-45A0-449F-9D1E-0E5E4C3BD000}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8522C09B-45A0-449F-9D1E-0E5E4C3BD000}.Debug|x86.Build.0 = Debug|Any CPU
-		{8522C09B-45A0-449F-9D1E-0E5E4C3BD000}.Release|x86.ActiveCfg = Release|Any CPU
-		{8522C09B-45A0-449F-9D1E-0E5E4C3BD000}.Release|x86.Build.0 = Release|Any CPU
-		{32EB86F9-E792-4FE7-8267-70667A5E5547}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{32EB86F9-E792-4FE7-8267-70667A5E5547}.Debug|x86.Build.0 = Debug|Any CPU
-		{32EB86F9-E792-4FE7-8267-70667A5E5547}.Release|x86.ActiveCfg = Release|Any CPU
-		{32EB86F9-E792-4FE7-8267-70667A5E5547}.Release|x86.Build.0 = Release|Any CPU
+		{8522C09B-45A0-449F-9D1E-0E5E4C3BD000}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8522C09B-45A0-449F-9D1E-0E5E4C3BD000}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8522C09B-45A0-449F-9D1E-0E5E4C3BD000}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8522C09B-45A0-449F-9D1E-0E5E4C3BD000}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32EB86F9-E792-4FE7-8267-70667A5E5547}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32EB86F9-E792-4FE7-8267-70667A5E5547}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32EB86F9-E792-4FE7-8267-70667A5E5547}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32EB86F9-E792-4FE7-8267-70667A5E5547}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
