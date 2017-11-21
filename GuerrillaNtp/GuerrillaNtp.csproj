@@ -6,8 +6,9 @@
     <Owners>Robert Važan</Owners>
     <PackageProjectUrl>http://blog.angeloflogic.com/2014/07/guerrillantp-app-embedded-ntp-client.html</PackageProjectUrl>
     <PackageTags>NTP SNTP time clock synchronized guerrilla guerila guerrila guerilla gerila gerrilla gerrila gerilla</PackageTags>
-    <Title>GuerrillaNtp</Title>
+	<PackageId>GuerrillaNtp</PackageId>
     <Description>App-embedded NTP client for time-sensitive apps</Description>
+    <Version>1.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="NuGet.Build.Packaging" Version="0.2.1" />
