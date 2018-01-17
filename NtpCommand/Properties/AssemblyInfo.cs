@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿// Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 // Information about this assembly is defined by the following attributes. 

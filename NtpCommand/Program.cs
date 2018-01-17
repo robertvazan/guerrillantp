@@ -1,4 +1,5 @@
-﻿using GuerrillaNtp;
+﻿// Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
+using GuerrillaNtp;
 using System;
 using System.Net;
 

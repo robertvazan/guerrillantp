@@ -1,3 +1,4 @@
+// Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
 namespace GuerrillaNtp
 {
     /// <summary>

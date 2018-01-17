@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
+using System;
 
 namespace GuerrillaNtp
 {
