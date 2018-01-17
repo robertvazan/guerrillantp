@@ -12,4 +12,7 @@
     <DebugType></DebugType>
     <DocumentationFile>bin\Release\netstandard1.5\GuerrillaNtp.xml</DocumentationFile>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>
