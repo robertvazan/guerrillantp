@@ -12,6 +12,9 @@ namespace GuerrillaNtp
     {
         readonly UdpClient UdpClient;
 
+        /// <summary>
+        /// Gets or sets timeout for NTP queries
+        /// </summary>
         public TimeSpan Timeout
         {
             get { return TimeSpan.FromMilliseconds(UdpClient.Client.ReceiveTimeout); }
