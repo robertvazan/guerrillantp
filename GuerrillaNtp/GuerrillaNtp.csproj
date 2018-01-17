@@ -4,4 +4,11 @@
     <TargetFramework>netstandard1.5</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DocumentationFile>bin\Debug\netstandard1.5\GuerrillaNtp.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType></DebugType>
+    <DocumentationFile>bin\Release\netstandard1.5\GuerrillaNtp.xml</DocumentationFile>
+  </PropertyGroup>
 </Project>
