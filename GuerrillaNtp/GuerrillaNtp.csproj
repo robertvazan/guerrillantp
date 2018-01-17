@@ -3,6 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.5</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageVersion>1.2.4.0</PackageVersion>
+    <Authors>Robert Važan</Authors>
+    <PackageIconUrl>https://cdn.machinezoo.com/h/nM2rl4vyVTXiUzYxiUVyZV6ckPIDRZoGg5n9kNMZ1bg/guerrillantp-favicon/android-chrome-192x192.png</PackageIconUrl>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>https://guerrillantp.machinezoo.com/</PackageProjectUrl>
+    <PackageTags>NTP SNTP time clock synchronized guerrilla guerila guerrila guerilla gerila gerrilla gerrila gerilla</PackageTags>
+    <Description>Simple NTP (SNTP) client that can be embedded in desktop applications to provide them with accurate network time even when the system clock is unsynchronized.</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -14,5 +21,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
   </ItemGroup>
 </Project>
