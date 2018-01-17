@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
@@ -31,7 +30,7 @@ namespace GuerrillaNtp
         {
             UdpClient = new UdpClient();
             UdpClient.Client.ReceiveTimeout = 15000;
-            UdpClient.Connect(endpoint);
+            UdpClient.Client.Connect(endpoint);
         }
 
         /// <summary>
@@ -42,16 +41,9 @@ namespace GuerrillaNtp
         public NtpClient(IPAddress address, int port = 123) : this(new IPEndPoint(address, port)) { }
 
         /// <summary>
-        /// Creates new NtpClient from server's host name and optional port
-        /// </summary>
-        /// <param name="host">The hostname of the NTP server to connect to</param>
-        /// <param name="port">The port of the NTP server to connect to</param>
-        public NtpClient(string host, int port = 123) : this(Dns.GetHostAddresses(host).First(), port) { }
-
-        /// <summary>
         /// Releases all resources held by NtpClient
         /// </summary>
-        public void Dispose() { UdpClient.Close(); }
+        public void Dispose() { UdpClient.Dispose(); }
 
         /// <summary>
         /// Queries the NTP server and returns correction offset
@@ -68,9 +60,8 @@ namespace GuerrillaNtp
         /// <returns>The response from the NTP server</returns>
         public NtpPacket Query(NtpPacket request)
         {
-            UdpClient.Send(request.Bytes, request.Bytes.Length);
-            IPEndPoint remote = null;
-            var response = new NtpPacket(UdpClient.Receive(ref remote));
+            UdpClient.Client.Send(request.Bytes);
+            var response = new NtpPacket(UdpClient.ReceiveAsync().Result.Buffer);
             response.OriginTimestamp = request.OriginTimestamp;
             response.DestinationTimestamp = DateTime.UtcNow;
             return response;

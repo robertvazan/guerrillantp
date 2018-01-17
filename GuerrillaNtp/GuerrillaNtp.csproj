@@ -1,16 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Authors>Robert Važan</Authors>
-    <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
-    <Owners>Robert Važan</Owners>
-    <PackageProjectUrl>http://blog.angeloflogic.com/2014/07/guerrillantp-app-embedded-ntp-client.html</PackageProjectUrl>
-    <PackageTags>NTP SNTP time clock synchronized guerrilla guerila guerrila guerilla gerila gerrilla gerrila gerilla</PackageTags>
-	<PackageId>GuerrillaNtp</PackageId>
-    <Description>App-embedded NTP client for time-sensitive apps</Description>
-    <Version>1.0</Version>
+    <TargetFramework>netstandard1.5</TargetFramework>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.1" />
-  </ItemGroup>
+
 </Project>

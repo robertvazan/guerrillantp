@@ -1,5 +1,6 @@
 ﻿using GuerrillaNtp;
 using System;
+using System.Net;
 
 namespace NtpCommand
 {
@@ -10,7 +11,7 @@ namespace NtpCommand
             var servers = args.Length > 0 ? args : new[] { "pool.ntp.org" };
             foreach (var host in servers)
             {
-                using (var ntp = new NtpClient(host))
+                using (var ntp = new NtpClient(Dns.GetHostAddresses(host)[0]))
                 {
                     ntp.Timeout = TimeSpan.FromSeconds(5);
                     var packet = ntp.Query();
