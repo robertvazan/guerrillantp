@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.5</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <PackageVersion>1.2.5.0</PackageVersion>
+    <PackageVersion>1.2.6.0</PackageVersion>
     <Authors>Robert Važan</Authors>
     <PackageIconUrl>https://cdn.machinezoo.com/h/nM2rl4vyVTXiUzYxiUVyZV6ckPIDRZoGg5n9kNMZ1bg/guerrillantp-favicon/android-chrome-192x192.png</PackageIconUrl>
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
