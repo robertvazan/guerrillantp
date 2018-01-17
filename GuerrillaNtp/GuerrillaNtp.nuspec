@@ -2,7 +2,7 @@
 <package >
 	<metadata>
 		<id>GuerrillaNtp</id>
-		<version>1.2.3.0</version>
+		<version>1.2.4.0</version>
 		<authors>Robert Važan</authors>
 		<description>Simple NTP (SNTP) client that can be embedded in desktop applications to provide them with accurate network time even when the system clock is unsynchronized.</description>
 		<tags>NTP SNTP time clock synchronized guerrilla guerila guerrila guerilla gerila gerrilla gerrila gerilla</tags>
