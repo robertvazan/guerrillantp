@@ -10,19 +10,19 @@ namespace GuerrillaNtp
     /// </summary>
     public class NtpClient : IDisposable
     {
-        readonly UdpClient UdpClient;
+        private readonly Socket socket;
 
         /// <summary>
         /// Gets or sets timeout for NTP queries
         /// </summary>
         public TimeSpan Timeout
         {
-            get { return TimeSpan.FromMilliseconds(UdpClient.Client.ReceiveTimeout); }
+            get { return TimeSpan.FromMilliseconds(socket.ReceiveTimeout); }
             set
             {
                 if (value < TimeSpan.FromMilliseconds(1))
                     throw new ArgumentOutOfRangeException();
-                UdpClient.Client.ReceiveTimeout = Convert.ToInt32(value.TotalMilliseconds);
+                socket.ReceiveTimeout = Convert.ToInt32(value.TotalMilliseconds);
             }
         }
 
@@ -32,9 +32,9 @@ namespace GuerrillaNtp
         /// <param name="endpoint">Endpoint of the remote NTP server</param>
         public NtpClient(IPEndPoint endpoint)
         {
-            UdpClient = new UdpClient();
-            UdpClient.Client.ReceiveTimeout = 15000;
-            UdpClient.Client.Connect(endpoint);
+            socket = new Socket(endpoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
+            socket.ReceiveTimeout = 15000;
+            socket.Connect(endpoint);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace GuerrillaNtp
         /// <summary>
         /// Releases all resources held by NtpClient
         /// </summary>
-        public void Dispose() { UdpClient.Dispose(); }
+        public void Dispose() { socket.Dispose(); }
 
         /// <summary>
         /// Queries the NTP server and returns correction offset
@@ -64,8 +64,12 @@ namespace GuerrillaNtp
         /// <returns>The response from the NTP server</returns>
         public NtpPacket Query(NtpPacket request)
         {
-            UdpClient.Client.Send(request.Bytes);
-            var response = new NtpPacket(UdpClient.ReceiveAsync().Result.Buffer);
+            var responseBuffer = new byte[request.Bytes.Length];
+
+            socket.Send(request.Bytes);
+            socket.Receive(responseBuffer);
+
+            var response = new NtpPacket(responseBuffer);
             response.OriginTimestamp = request.OriginTimestamp;
             response.DestinationTimestamp = DateTime.UtcNow;
             return response;
