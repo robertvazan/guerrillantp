@@ -17,5 +17,5 @@
 //      Minor Version 
 //      Build Number
 //      Revision
-[assembly: AssemblyVersion("1.2.8.0")]
+[assembly: AssemblyVersion("1.2.9.0")]
 
