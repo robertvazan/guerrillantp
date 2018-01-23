@@ -78,7 +78,7 @@ namespace GuerrillaNtp
         public DateTime? ReferenceTimestamp { get { return GetDateTime64(16); } set { SetDateTime64(16, value); } }
 
         /// <summary>
-        /// Gets the date and time this packet left the server
+        /// Gets the date and time this packet left the client
         /// </summary>
         public DateTime? OriginTimestamp { get { return GetDateTime64(24); } set { SetDateTime64(24, value); } }
 
