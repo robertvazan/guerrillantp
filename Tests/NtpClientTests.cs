@@ -14,9 +14,8 @@ namespace Tests {
         [TestMethod]
         public void Test_can_get_correction_offset() {
             using (var client = new NtpClient(server)) {
-                var offset = client.GetCorrectionOffset();
-
-                Trace.WriteLine("Offset: " + offset);
+                for (int i = 0; i < 10; i++)
+                    Trace.WriteLine($"Offset #{i+1}: {client.GetCorrectionOffset()}");
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿// Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
@@ -69,16 +70,13 @@ namespace GuerrillaNtp
             socket.Send(request.Bytes);
             socket.Receive(responseBuffer);
 
-            var response = new NtpPacket(responseBuffer);
-            response.OriginTimestamp = request.OriginTimestamp;
-            response.DestinationTimestamp = DateTime.UtcNow;
-            return response;
+            return new NtpPacket(responseBuffer) { DestinationTimestamp = DateTime.UtcNow };
         }
 
         /// <summary>
         /// Queries NTP server with default options
         /// </summary>
         /// <returns>NTP packet returned from the server</returns>
-        public NtpPacket Query() { return Query(new NtpPacket() { OriginTimestamp = DateTime.UtcNow }); }
+        public NtpPacket Query() { return Query(new NtpPacket() { TransmitTimestamp = DateTime.UtcNow }); }
     }
 }
