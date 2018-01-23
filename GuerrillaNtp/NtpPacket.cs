@@ -78,7 +78,9 @@ namespace GuerrillaNtp
         public DateTime? ReferenceTimestamp { get { return GetDateTime64(16); } set { SetDateTime64(16, value); } }
 
         /// <summary>
-        /// Gets the date and time this packet left the client
+        /// When creating a response, the server copies the TransmitTimestamp of the request to the OriginTimestamp of the response.
+        /// 
+        /// Not used / null in request packets
         /// </summary>
         public DateTime? OriginTimestamp { get { return GetDateTime64(24); } set { SetDateTime64(24, value); } }
 
@@ -88,7 +90,7 @@ namespace GuerrillaNtp
         public DateTime? ReceiveTimestamp { get { return GetDateTime64(32); } set { SetDateTime64(32, value); } }
 
         /// <summary>
-        /// Gets the date and time that the packet was transmitted from the server
+        /// Gets the date and time that the packet was transmitted from the client (in request packets) or from the server (in response packets)
         /// </summary>
         public DateTime? TransmitTimestamp { get { return GetDateTime64(40); } set { SetDateTime64(40, value); } }
 
