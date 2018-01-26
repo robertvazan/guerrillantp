@@ -10,7 +10,7 @@ namespace GuerrillaNtp
     /// </summary>
     public class NtpClient : IDisposable
     {
-        private readonly Socket socket;
+        readonly Socket socket;
 
         /// <summary>
         /// Gets or sets timeout for NTP queries
