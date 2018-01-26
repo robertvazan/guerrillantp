@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuerrillaNtp", "GuerrillaNt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NtpCommand", "NtpCommand\NtpCommand.csproj", "{5B76615E-2B5E-45B7-9850-20D05AEFCEAD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuerrillaNtpTests", "GuerrillaNtpTests\GuerrillaNtpTests.csproj", "{4969DA50-E64D-42E6-823C-3383EDA51E8A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,5 +21,9 @@ Global
 		{5B76615E-2B5E-45B7-9850-20D05AEFCEAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B76615E-2B5E-45B7-9850-20D05AEFCEAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B76615E-2B5E-45B7-9850-20D05AEFCEAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4969DA50-E64D-42E6-823C-3383EDA51E8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4969DA50-E64D-42E6-823C-3383EDA51E8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4969DA50-E64D-42E6-823C-3383EDA51E8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4969DA50-E64D-42E6-823C-3383EDA51E8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
