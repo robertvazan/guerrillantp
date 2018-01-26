@@ -1,3 +1,4 @@
+// Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
 using System;
 using System.Diagnostics;
 using System.Net;
