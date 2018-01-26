@@ -8,7 +8,7 @@ namespace GuerrillaNtp
     /// </summary>
     public class NtpPacket
     {
-        readonly DateTime PrimeEpoch = new DateTime(1900, 1, 1);
+        static readonly DateTime epoch = new DateTime(1900, 1, 1);
 
         /// <summary>
         /// Gets the byte array representing this packet
@@ -154,9 +154,9 @@ namespace GuerrillaNtp
             var field = GetUInt64BE(offset);
             if (field == 0)
                 return null;
-            return new DateTime(PrimeEpoch.Ticks + Convert.ToInt64(field * (1.0 / (1L << 32) * 10000000.0)));
+            return new DateTime(epoch.Ticks + Convert.ToInt64(field * (1.0 / (1L << 32) * 10000000.0)));
         }
-        void SetDateTime64(int offset, DateTime? value) { SetUInt64BE(offset, value == null ? 0 : Convert.ToUInt64((value.Value.Ticks - PrimeEpoch.Ticks) * (0.0000001 * (1L << 32)))); }
+        void SetDateTime64(int offset, DateTime? value) { SetUInt64BE(offset, value == null ? 0 : Convert.ToUInt64((value.Value.Ticks - epoch.Ticks) * (0.0000001 * (1L << 32)))); }
         ulong GetUInt64BE(int offset) { return SwapEndianness(BitConverter.ToUInt64(Bytes, offset)); }
         void SetUInt64BE(int offset, ulong value) { Array.Copy(BitConverter.GetBytes(SwapEndianness(value)), 0, Bytes, offset, 8); }
         int GetInt32BE(int offset) { return (int)GetUInt32BE(offset); }
