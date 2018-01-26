@@ -33,7 +33,7 @@ namespace GuerrillaNtp
         public NtpClient(IPEndPoint endpoint)
         {
             socket = new Socket(endpoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
-            socket.ReceiveTimeout = 15000;
+            socket.ReceiveTimeout = 1000;
             socket.Connect(endpoint);
         }
 
