@@ -55,7 +55,7 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the precision of the system clock (in log₂ seconds)
         /// </summary>
-        public int Precision { get { return Bytes[3]; } }
+        public int Precision { get { return (sbyte)Bytes[3]; } }
 
         /// <summary>
         /// Gets the total round trip delay from the server to the reference clock
