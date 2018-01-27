@@ -54,7 +54,7 @@ namespace Tests
                     client.GetCorrectionOffset();
                     Assert.Fail("Shouldn't get here. Expecting timeout!");
                 }
-                catch (SocketException ex) when (ex.ErrorCode == 10060 || ex.ErrorCode == 10035)
+                catch (SocketException ex) when (ex.ErrorCode == 10060 || ex.ErrorCode == 10035 || ex.ErrorCode == 110)
                 {
                     // We expect a socket timeout error
                 }
@@ -62,7 +62,7 @@ namespace Tests
                 timer.Stop();
 
                 Assert.IsTrue(timer.Elapsed >= timeout, timer.Elapsed.ToString());
-                Assert.IsTrue(timer.Elapsed < timeout + timeout, timer.Elapsed.ToString());
+                Assert.IsTrue(timer.Elapsed < timeout + timeout + timeout, timer.Elapsed.ToString());
             }
         }
     }
