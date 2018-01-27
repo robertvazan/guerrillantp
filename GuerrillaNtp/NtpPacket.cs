@@ -107,8 +107,7 @@ namespace GuerrillaNtp
         {
             get
             {
-                if (OriginTimestamp == null || ReceiveTimestamp == null || TransmitTimestamp == null || DestinationTimestamp == null)
-                    throw new InvalidOperationException();
+                CheckTimestamps();
                 return (ReceiveTimestamp.Value - OriginTimestamp.Value) + (DestinationTimestamp.Value - TransmitTimestamp.Value);
             }
         }
@@ -120,8 +119,7 @@ namespace GuerrillaNtp
         {
             get
             {
-                if (OriginTimestamp == null || ReceiveTimestamp == null || TransmitTimestamp == null || DestinationTimestamp == null)
-                    throw new InvalidOperationException();
+                CheckTimestamps();
                 return TimeSpan.FromTicks(((ReceiveTimestamp.Value - OriginTimestamp.Value) - (DestinationTimestamp.Value - TransmitTimestamp.Value)).Ticks / 2);
             }
         }
@@ -136,17 +134,48 @@ namespace GuerrillaNtp
             VersionNumber = 4;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NtpPacket"/> class
-        /// </summary>
-        /// <param name="bytes">
-        /// A byte array representing an NTP packet
-        /// </param>
-        public NtpPacket(byte[] bytes)
+        internal NtpPacket(byte[] bytes)
         {
             if (bytes.Length < 48)
-                throw new ArgumentOutOfRangeException(nameof(bytes), "The byte array must be at least length 48.");
+                throw new NtpException(null, "SNTP reply packet must be at least 48 bytes long.");
             Bytes = bytes;
+        }
+
+        internal void ValidateRequest()
+        {
+            if (Mode != NtpMode.Client)
+                throw new NtpException(this, "This is not a request SNTP packet.");
+            if (VersionNumber == 0)
+                throw new NtpException(this, "Protocol version of the request is not specified.");
+            if (TransmitTimestamp == null)
+                throw new NtpException(this, "TransmitTimestamp must be set in request packet.");
+        }
+
+        internal void ValidateReply(NtpPacket request)
+        {
+            if (Mode != NtpMode.Server)
+                throw new NtpException(this, "This is not a reply SNTP packet.");
+            if (VersionNumber == 0)
+                throw new NtpException(this, "Protocol version of the reply is not specified.");
+            if (Stratum == 0)
+                throw new NtpException(this, String.Format("Received Kiss-o'-Death SNTP packet with code 0x{0:x}.", ReferenceId));
+            if (LeapIndicator == NtpLeapIndicator.AlarmCondition)
+                throw new NtpException(this, "SNTP server has unsynchronized clock.");
+            CheckTimestamps();
+            if (OriginTimestamp != request.TransmitTimestamp)
+                throw new NtpException(this, "Origin timestamp in reply doesn't match transmit timestamp in request.");
+        }
+
+        void CheckTimestamps()
+        {
+            if (OriginTimestamp == null)
+                throw new NtpException(this, "Origin timestamp is missing.");
+            if (ReceiveTimestamp == null)
+                throw new NtpException(this, "Receive timestamp is missing.");
+            if (TransmitTimestamp == null)
+                throw new NtpException(this, "Transmit timestamp is missing.");
+            if (DestinationTimestamp == null)
+                throw new NtpException(this, "Destination timestamp is missing.");
         }
 
         DateTime? GetDateTime64(int offset)

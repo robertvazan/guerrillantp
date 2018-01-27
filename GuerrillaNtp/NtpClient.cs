@@ -64,12 +64,15 @@ namespace GuerrillaNtp
         /// <returns>The response from the NTP server</returns>
         public NtpPacket Query(NtpPacket request)
         {
+            request.ValidateRequest();
             socket.Send(request.Bytes);
-            var response = new byte[512];
+            var response = new byte[160];
             int received = socket.Receive(response);
             var truncated = new byte[received];
             Array.Copy(response, truncated, received);
-            return new NtpPacket(truncated) { DestinationTimestamp = DateTime.UtcNow };
+            NtpPacket reply = new NtpPacket(truncated) { DestinationTimestamp = DateTime.UtcNow };
+            reply.ValidateReply(request);
+            return reply;
         }
 
         /// <summary>
