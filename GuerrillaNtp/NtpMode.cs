@@ -2,17 +2,18 @@
 namespace GuerrillaNtp
 {
     /// <summary>
-    /// A set of values indicating how an NTP server can be associated with another
+    /// Describes SNTP packet mode, i.e. client or server.
     /// </summary>
+    /// <seealso cref="P:GuerrillaNtp.NtpPacket.Mode" />
     public enum NtpMode
     {
         /// <summary>
-        /// The NTP host is configured as a client
+        /// Identifies client-to-server SNTP packet.
         /// </summary>
         Client = 3, 
 
         /// <summary>
-        /// The NTP host is configured as a server
+        /// Identifies server-to-client SNTP packet.
         /// </summary>
         Server = 4, 
     }
