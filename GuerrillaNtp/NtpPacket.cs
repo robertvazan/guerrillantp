@@ -60,12 +60,12 @@ namespace GuerrillaNtp
         /// <summary>
         /// Gets the total round trip delay from the server to the reference clock
         /// </summary>
-        public int RootDelay { get { return GetInt32BE(4); } }
+        public TimeSpan RootDelay { get { return GetTimeSpan32(4); } }
 
         /// <summary>
         /// Gets the amount of jitter the server observes in the reference clock
         /// </summary>
-        public int RootDispersion { get { return GetInt32BE(8); } }
+        public TimeSpan RootDispersion { get { return GetTimeSpan32(8); } }
 
         /// <summary>
         /// Gets the ID of the server or reference clock
@@ -157,6 +157,7 @@ namespace GuerrillaNtp
             return new DateTime(epoch.Ticks + Convert.ToInt64(field * (1.0 / (1L << 32) * 10000000.0)));
         }
         void SetDateTime64(int offset, DateTime? value) { SetUInt64BE(offset, value == null ? 0 : Convert.ToUInt64((value.Value.Ticks - epoch.Ticks) * (0.0000001 * (1L << 32)))); }
+        TimeSpan GetTimeSpan32(int offset) { return TimeSpan.FromSeconds(GetInt32BE(offset) / (double)(1 << 16)); }
         ulong GetUInt64BE(int offset) { return SwapEndianness(BitConverter.ToUInt64(Bytes, offset)); }
         void SetUInt64BE(int offset, ulong value) { Array.Copy(BitConverter.GetBytes(SwapEndianness(value)), 0, Bytes, offset, 8); }
         int GetInt32BE(int offset) { return (int)GetUInt32BE(offset); }
