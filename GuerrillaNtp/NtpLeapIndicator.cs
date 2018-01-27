@@ -22,8 +22,8 @@ namespace GuerrillaNtp
         LastMinuteHas59Seconds, 
 
         /// <summary>
-        /// The clock is unsynchronized so it is unknown if there exists an impending leap second
+        /// Server clock is unsynchronized
         /// </summary>
-        Unknown
+        AlarmCondition
     }
 }
