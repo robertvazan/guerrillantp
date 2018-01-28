@@ -16,7 +16,7 @@ namespace GuerrillaNtp
     /// Most appliucations should just use the <see cref="P:GuerrillaNtp.NtpPacket.CorrectionOffset" /> property.
     /// </remarks>
     /// <seealso cref="T:GuerrillaNtp.NtpClient" />
-    /// <seealso cref="M:GuerrillaNtp.NtpClient.Query(NtpPacket)" />
+    /// <seealso cref="M:GuerrillaNtp.NtpClient.Query(GuerrillaNtp.NtpPacket)" />
     /// <seealso cref="P:GuerrillaNtp.NtpPacket.CorrectionOffset" />
     public class NtpPacket
     {
