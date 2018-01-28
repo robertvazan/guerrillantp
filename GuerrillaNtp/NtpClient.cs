@@ -15,6 +15,9 @@ namespace GuerrillaNtp
     /// Most applications should just call <see cref="M:GuerrillaNtp.NtpClient.GetCorrectionOffset" />
     /// after instantiating this class. Method <see cref="M:GuerrillaNtp.NtpClient.Query" />
     /// can be used to obtain additional details stored in reply <see cref="T:GuerrillaNtp.NtpPacket" />.
+    /// It is application responsibility to be a good netizen,
+    /// which most importantly means using reasonable polling intervals
+    /// and exponential backoff when querying public NTP server.
     /// </remarks>
     public class NtpClient : IDisposable
     {
