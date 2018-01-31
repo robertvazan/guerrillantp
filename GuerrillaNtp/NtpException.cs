@@ -12,7 +12,7 @@ namespace GuerrillaNtp
         /// Gets the SNTP packet that caused this exception, if any.
         /// </summary>
         /// <value>
-        /// SNTP packet that caused this exception, especially reply packet,
+        /// SNTP packet that caused this exception, usually reply packet,
         /// or <c>null</c> if the error is not specific to any packet.
         /// </value>
         public NtpPacket Packet { get; private set; }

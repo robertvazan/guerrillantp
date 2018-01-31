@@ -7,13 +7,21 @@ namespace GuerrillaNtp
     /// Represents RFC4330 SNTP packet used for communication to and from a network time server.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// See <a href="https://guerrillantp.machinezoo.com/">project homepage</a> for guidance on how to use GuerrillaNtp.
+    /// Most applications should just use the <see cref="P:GuerrillaNtp.NtpPacket.CorrectionOffset" /> property
+    /// or even better call <see cref="M:GuerrillaNtp.NtpClient.GetCorrectionOffset" />.
+    /// </para>
+    /// <para>
     /// The same data structure represents both request and reply packets.
     /// Request and reply differ in which properties are set and to what values.
+    /// </para>
+    /// <para>
     /// The only real property is <see cref="P:GuerrillaNtp.NtpPacket.Bytes" />.
-    /// All other properties read from or write to the underlying byte array.
-    /// The only exception is <see cref="P:GuerrillaNtp.NtpPacket.DestinationTimestamp" />
-    /// that is not part of the protocol.
-    /// Most appliucations should just use the <see cref="P:GuerrillaNtp.NtpPacket.CorrectionOffset" /> property.
+    /// All other properties read from and write to the underlying byte array
+    /// with the exception of <see cref="P:GuerrillaNtp.NtpPacket.DestinationTimestamp" />,
+    /// which is not part of the packet on network and it is instead set locally after receiving the packet.
+    /// </para>
     /// </remarks>
     /// <seealso cref="T:GuerrillaNtp.NtpClient" />
     /// <seealso cref="M:GuerrillaNtp.NtpClient.Query(GuerrillaNtp.NtpPacket)" />
@@ -83,9 +91,15 @@ namespace GuerrillaNtp
         /// Gets server's distance from the reference clock.
         /// </summary>
         /// <value>
+        /// <para>
         /// Distance from the reference clock. This property is set only in server reply packets.
         /// Servers connected directly to reference clock hardware set this property to 1.
         /// Statum number is incremented by 1 on every hop down the NTP server hierarchy.
+        /// </para>
+        /// <para>
+        /// Special value 0 indicates that this packet is a Kiss-o'-Death message
+        /// with kiss code stored in <see cref="P:GuerrillaNtp.NtpPacket.ReferenceId" />.
+        /// </para>
         /// </value>
         public int Stratum { get { return Bytes[1]; } }
 
@@ -106,7 +120,7 @@ namespace GuerrillaNtp
         public int Precision { get { return (sbyte)Bytes[3]; } }
 
         /// <summary>
-        /// Gets the total round trip delay from the server to the reference clock.
+        /// Gets the total round-trip delay from the server to the reference clock.
         /// </summary>
         /// <value>
         /// Round-trip delay to the reference clock. Normally a positive value smaller than one second.
@@ -122,14 +136,24 @@ namespace GuerrillaNtp
         public TimeSpan RootDispersion { get { return GetTimeSpan32(8); } }
 
         /// <summary>
-        /// Gets the ID of the time source the server is using or Kiss-o'-Death code sent by the server.
+        /// Gets the ID of the time source used by the server or Kiss-o'-Death code sent by the server.
         /// </summary>
         /// <value>
+        /// <para>
         /// ID of server's time source or Kiss-o'-Death code.
-        /// Stratum 1 servers have one of predefined special values here describing the kind of hardware clock used.
+        /// Purpose of this property depends on value of <see cref="P:GuerrillaNtp.NtpPacket.Stratum" /> property.
+        /// </para>
+        /// <para>
+        /// Stratum 1 servers write here one of several special values that describe the kind of hardware clock they use.
+        /// </para>
+        /// <para>
         /// Stratum 2 and lower servers set this property to IPv4 address of their upstream server.
-        /// IPv6 addresses are hashed since they don't fit in this property.
-        /// When server sets stratum to special value 0, this property contains Kiss-o'-Death code.
+        /// If upstream server has IPv6 address, the address is hashed, because it doesn't fit in this property.
+        /// </para>
+        /// <para>
+        /// When server sets <see cref="P:GuerrillaNtp.NtpPacket.Stratum" /> to special value 0,
+        /// this property contains so called kiss code that instructs the client to stop querying the server.
+        /// </para>
         /// </value>
         public uint ReferenceId { get { return GetUInt32BE(12); } }
 
@@ -151,7 +175,8 @@ namespace GuerrillaNtp
         /// <value>
         /// This property is <c>null</c> in request packets.
         /// In reply packets, it is the time when the client sent its request.
-        /// Servers copy this value from <see cref="P:GuerrillaNtp.NtpPacket.TransmitTimestamp" /> in request packet.
+        /// Servers copy this value from <see cref="P:GuerrillaNtp.NtpPacket.TransmitTimestamp" />
+        /// that they find in received request packet.
         /// </value>
         /// <seealso cref="P:GuerrillaNtp.NtpPacket.CorrectionOffset" />
         /// <seealso cref="P:GuerrillaNtp.NtpPacket.RoundTripTime" />
@@ -173,6 +198,7 @@ namespace GuerrillaNtp
         /// </summary>
         /// <value>
         /// Time when the packet was sent. It should never be <c>null</c>.
+        /// Default value is <see cref="P:System.DateTime.UtcNow" />.
         /// </value>
         /// <remarks>
         /// This property must be set by both clients and servers.
@@ -189,21 +215,29 @@ namespace GuerrillaNtp
         /// </value>
         /// <remarks>
         /// This property is not part of the protocol.
-        /// It is set by <see cref="T:GuerrillaNtp.NtpClient" /> on received reply packets.
+        /// It is set by <see cref="T:GuerrillaNtp.NtpClient" /> when reply packet is received.
         /// </remarks>
         /// <seealso cref="P:GuerrillaNtp.NtpPacket.CorrectionOffset" />
         /// <seealso cref="P:GuerrillaNtp.NtpPacket.RoundTripTime" />
         public DateTime? DestinationTimestamp { get; set; }
 
         /// <summary>
-        /// Gets the time spent on the wire in both directions together.
+        /// Gets the round-trip time to the server.
         /// </summary>
         /// <value>
         /// Time the request spent travelling to the server plus the time the reply spent travelling back.
-        /// This is calculated from timestamps in the packet as <c>(receive - origin) + (destination - transmit)</c>.
+        /// This is calculated from timestamps in the packet as <c>(t1 - t0) + (t3 - t2)</c>
+        /// where t0 is <see cref="P:GuerrillaNtp.NtpPacket.OriginTimestamp" />,
+        /// t1 is <see cref="P:GuerrillaNtp.NtpPacket.ReceiveTimestamp" />,
+        /// t2 is <see cref="P:GuerrillaNtp.NtpPacket.TransmitTimestamp" />,
+        /// and t3 is <see cref="P:GuerrillaNtp.NtpPacket.DestinationTimestamp" />.
         /// This property throws an exception in request packets.
         /// </value>
         /// <exception cref="T:GuerrillaNtp.NtpException">Thrown when one of the required timestamps is not present.</exception>
+        /// <seealso cref="P:GuerrillaNtp.NtpPacket.OriginTimestamp" />
+        /// <seealso cref="P:GuerrillaNtp.NtpPacket.ReceiveTimestamp" />
+        /// <seealso cref="P:GuerrillaNtp.NtpPacket.TransmitTimestamp" />
+        /// <seealso cref="P:GuerrillaNtp.NtpPacket.DestinationTimestamp" />
         /// <seealso cref="P:GuerrillaNtp.NtpPacket.CorrectionOffset" />
         public TimeSpan RoundTripTime
         {
@@ -219,11 +253,19 @@ namespace GuerrillaNtp
         /// </summary>
         /// <value>
         /// Time difference between server and client. It should be added to local time to get server time.
-        /// It is calculated from timestamps in the packet as <c>(receive - origin) - (destination - transmit)</c>.
+        /// It is calculated from timestamps in the packet as <c>0.5 * ((t1 - t0) - (t3 - t2))</c>
+        /// where t0 is <see cref="P:GuerrillaNtp.NtpPacket.OriginTimestamp" />,
+        /// t1 is <see cref="P:GuerrillaNtp.NtpPacket.ReceiveTimestamp" />,
+        /// t2 is <see cref="P:GuerrillaNtp.NtpPacket.TransmitTimestamp" />,
+        /// and t3 is <see cref="P:GuerrillaNtp.NtpPacket.DestinationTimestamp" />.
         /// This property throws an exception in request packets.
         /// </value>
         /// <exception cref="T:GuerrillaNtp.NtpException">Thrown when one of the required timestamps is not present.</exception>
         /// <seealso cref="M:GuerrillaNtp.NtpClient.GetCorrectionOffset" />
+        /// <seealso cref="P:GuerrillaNtp.NtpPacket.OriginTimestamp" />
+        /// <seealso cref="P:GuerrillaNtp.NtpPacket.ReceiveTimestamp" />
+        /// <seealso cref="P:GuerrillaNtp.NtpPacket.TransmitTimestamp" />
+        /// <seealso cref="P:GuerrillaNtp.NtpPacket.DestinationTimestamp" />
         /// <seealso cref="P:GuerrillaNtp.NtpPacket.RoundTripTime" />
         public TimeSpan CorrectionOffset
         {
@@ -238,15 +280,18 @@ namespace GuerrillaNtp
         /// Initializes default request packet.
         /// </summary>
         /// <remarks>
+        /// Created request packet can be passed to <see cref="M:GuerrillaNtp.NtpClient.Query(GuerrillaNtp.NtpPacket)" />.
         /// Properties <see cref="P:GuerrillaNtp.NtpPacket.Mode" /> and <see cref="P:GuerrillaNtp.NtpPacket.VersionNumber" />
-        /// are set appropriately for client packet. Property <see cref="P:GuerrillaNtp.NtpPacket.TransmitTimestamp" />
-        /// must be set before the packet is sent.
+        /// are set appropriately for request packet. Property <see cref="P:GuerrillaNtp.NtpPacket.TransmitTimestamp" />
+        /// is set to <see cref="P:System.DateTime.UtcNow" />.
         /// </remarks>
+        /// <seealso cref="M:GuerrillaNtp.NtpClient.Query(GuerrillaNtp.NtpPacket)" />
         public NtpPacket()
             : this(new byte[48])
         {
             Mode = NtpMode.Client;
             VersionNumber = 4;
+            TransmitTimestamp = DateTime.UtcNow;
         }
 
         internal NtpPacket(byte[] bytes)
