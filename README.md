@@ -6,7 +6,6 @@ to provide them with accurate network time even when the system clock is unsynch
 ```csharp
 // query the SNTP server
 TimeSpan offset;
-try
 using (var ntp = new NtpClient(Dns.GetHostAddresses("pool.ntp.org")[0]))
     offset = ntp.GetCorrectionOffset();
 
