@@ -13,8 +13,9 @@ using (var ntp = new NtpClient(Dns.GetHostAddresses("pool.ntp.org")[0]))
 var accurateTime = DateTime.UtcNow + offset;
 ```
 
-* [Homepage](https://guerrillantp.machinezoo.com/) - Overview, download, tutorial, alternatives, contact.
-* [Documentation](https://guerrillantp.machinezoo.com/api/) - API reference documentation.
-* [Sources](https://bitbucket.org/robertvazan/guerrillantp/src) - Primary repository, preferred for pull requests.
-* [License](https://www.apache.org/licenses/LICENSE-2.0) - Distributed under Apache License 2.0.
+* Documentation: [Tutorial](https://guerrillantp.machinezoo.com/), [API Reference](https://guerrillantp.machinezoo.com/api/)
+* Download: see [Tutorial](https://guerrillantp.machinezoo.com/)
+* Sources: [GitHub](https://github.com/robertvazan/guerrillantp), [Bitbucket](https://bitbucket.org/robertvazan/guerrillantp)
+* Issues: [GitHub](https://github.com/robertvazan/guerrillantp/issues), [Bitbucket](https://bitbucket.org/robertvazan/guerrillantp/issues)
+* License: [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
