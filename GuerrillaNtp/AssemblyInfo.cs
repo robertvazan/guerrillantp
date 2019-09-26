@@ -1,4 +1,4 @@
-﻿// Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
+// Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
 using System.Reflection;
 
 // General Information about an assembly is controlled through the following 
