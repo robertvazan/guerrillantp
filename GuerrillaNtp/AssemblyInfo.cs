@@ -9,7 +9,7 @@ using System.Reflection;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Robert Važan")]
 [assembly: AssemblyProduct("GuerrillaNtp")]
-[assembly: AssemblyCopyright("Copyright ©  2014-2018 Robert Važan")]
+[assembly: AssemblyCopyright("Copyright ©  2014-2020 Robert Važan")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
