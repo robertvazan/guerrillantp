@@ -65,5 +65,31 @@ namespace Tests
                 Assert.IsTrue(timer.Elapsed < timeout + timeout + timeout, timer.Elapsed.ToString());
             }
         }
+        [Test]
+        public void Test_Timeout_from_ctor_expires()
+        {
+            var timeout = TimeSpan.FromMilliseconds(500);
+
+            // Note: pick a host that *drops* packets. The test will fail if the host merely *rejects* packets.
+            using (var client = new NtpClient(IPAddress.Parse("8.8.8.8"), timeout))
+            {
+                var timer = Stopwatch.StartNew();
+
+                try
+                {
+                    client.GetCorrectionOffset();
+                    Assert.Fail("Shouldn't get here. Expecting timeout!");
+                }
+                catch (SocketException ex) when (ex.ErrorCode == 10060 || ex.ErrorCode == 10035 || ex.ErrorCode == 110)
+                {
+                    // We expect a socket timeout error
+                }
+
+                timer.Stop();
+
+                Assert.IsTrue(timer.Elapsed >= timeout, timer.Elapsed.ToString());
+                Assert.IsTrue(timer.Elapsed < timeout + timeout + timeout, timer.Elapsed.ToString());
+            }
+        }
     }
 }
