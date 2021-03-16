@@ -17,5 +17,5 @@ var accurateTime = DateTime.UtcNow + offset;
 * Download: see [Tutorial](https://guerrillantp.machinezoo.com/)
 * Sources: [GitHub](https://github.com/robertvazan/guerrillantp), [Bitbucket](https://bitbucket.org/robertvazan/guerrillantp)
 * Issues: [GitHub](https://github.com/robertvazan/guerrillantp/issues), [Bitbucket](https://bitbucket.org/robertvazan/guerrillantp/issues)
-* License: [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+* License: [Apache License 2.0](LICENSE)
 
