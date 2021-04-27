@@ -1,5 +1,7 @@
 # GuerrillaNtp #
 
+[![Nuget](https://img.shields.io/nuget/v/GuerrillaNtp)](https://www.nuget.org/packages/GuerrillaNtp/)
+
 GuerrillaNtp is a simple NTP (SNTP) client written in C# that can be embedded in desktop .NET applications
 to provide them with accurate network time even when the system clock is unsynchronized.
 
