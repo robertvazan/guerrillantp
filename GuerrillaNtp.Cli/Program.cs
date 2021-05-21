@@ -3,7 +3,7 @@ using GuerrillaNtp;
 using System;
 using System.Net;
 
-namespace NtpCommand
+namespace GuerrillaNtp.Cli
 {
     class Program
     {

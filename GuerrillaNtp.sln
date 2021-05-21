@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuerrillaNtp", "GuerrillaNtp\GuerrillaNtp.csproj", "{33509321-B1A1-41C0-9578-D7D50904462E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NtpCommand", "NtpCommand\NtpCommand.csproj", "{5B76615E-2B5E-45B7-9850-20D05AEFCEAD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuerrillaNtp.Cli", "GuerrillaNtp.Cli\GuerrillaNtp.Cli.csproj", "{5B76615E-2B5E-45B7-9850-20D05AEFCEAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuerrillaNtpTests", "GuerrillaNtpTests\GuerrillaNtpTests.csproj", "{4969DA50-E64D-42E6-823C-3383EDA51E8A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuerrillaNtp.Tests", "GuerrillaNtp.Tests\GuerrillaNtp.Tests.csproj", "{4969DA50-E64D-42E6-823C-3383EDA51E8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
