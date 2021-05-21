@@ -14,7 +14,7 @@ namespace GuerrillaNtp.Tests
         private IPAddress server = Dns.GetHostEntry("pool.ntp.org").AddressList[0];
 
         [Test]
-        public void Test_can_get_correction_offset()
+        public void TestCorrectionOffset()
         {
             const int tries = 3;
             int hits = 0;
@@ -38,7 +38,7 @@ namespace GuerrillaNtp.Tests
         }
 
         [Test]
-        public void Test_Timeout_expires()
+        public void TestTimeout()
         {
             var timeout = TimeSpan.FromMilliseconds(500);
 
@@ -66,7 +66,7 @@ namespace GuerrillaNtp.Tests
             }
         }
         [Test]
-        public void Test_Timeout_from_ctor_expires()
+        public void TestTimeoutViaConstructor()
         {
             var timeout = TimeSpan.FromMilliseconds(500);
 
