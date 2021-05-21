@@ -10,11 +10,11 @@ namespace GuerrillaNtp
         /// <summary>
         /// Identifies client-to-server SNTP packet.
         /// </summary>
-        Client = 3, 
+        Client = 3,
 
         /// <summary>
         /// Identifies server-to-client SNTP packet.
         /// </summary>
-        Server = 4, 
+        Server = 4,
     }
 }

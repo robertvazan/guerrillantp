@@ -179,6 +179,6 @@ namespace GuerrillaNtp
         /// <seealso cref="M:GuerrillaNtp.NtpClient.GetCorrectionOffset" />
         /// <seealso cref="P:GuerrillaNtp.NtpPacket.CorrectionOffset" />
         /// <seealso cref="M:GuerrillaNtp.NtpClient.Query(GuerrillaNtp.NtpPacket)" />
-       public NtpPacket Query() { return Query(new NtpPacket()); }
+        public NtpPacket Query() { return Query(new NtpPacket()); }
     }
 }

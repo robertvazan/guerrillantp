@@ -10,17 +10,17 @@ namespace GuerrillaNtp
         /// <summary>
         /// No leap second warning. No action required.
         /// </summary>
-        NoWarning, 
+        NoWarning,
 
         /// <summary>
         /// Warns the client that the last minute of the current day has 61 seconds.
         /// </summary>
-        LastMinuteHas61Seconds, 
+        LastMinuteHas61Seconds,
 
         /// <summary>
         /// Warns the client that the last minute of the current day has 59 seconds.
         /// </summary>
-        LastMinuteHas59Seconds, 
+        LastMinuteHas59Seconds,
 
         /// <summary>
         /// Special value indicating that the server clock is unsynchronized and the returned time is unreliable.
