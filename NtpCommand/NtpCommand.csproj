@@ -1,9 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="..\GuerrillaNtp\GuerrillaNtp.csproj" />
-  </ItemGroup>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Title>GuerrillaNtp CLI</Title>
+    <Version>1.0.0</Version>
+    <Authors>robertvazan</Authors>
+    <Description>Command-line interface to GuerrillaNtp SNTP client.</Description>
+    <PackageProjectUrl>https://guerrillantp.machinezoo.com/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/robertvazan/guerrillantp.git</RepositoryUrl>
+    <PackageTags>NTP SNTP time clock network</PackageTags>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GuerrillaNtp\GuerrillaNtp.csproj" />
+  </ItemGroup>
 </Project>
