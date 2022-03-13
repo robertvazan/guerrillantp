@@ -1,3 +1,5 @@
+[![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
+
 # GuerrillaNtp #
 
 [![Nuget](https://img.shields.io/nuget/v/GuerrillaNtp)](https://www.nuget.org/packages/GuerrillaNtp/)
