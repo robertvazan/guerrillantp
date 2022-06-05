@@ -34,7 +34,7 @@ namespace GuerrillaNtp {
         /// <remarks>
         /// <see cref="NtpPacket()" /> constructor
         /// creates valid request packet, which you can further customize.
-        /// If you don't need any customization of the request packet, call <see cref="NtpClient.GetCorrectionResponseAsync(NtpPacket, CancellationToken)" /> instead.
+        /// If you don't need any customization of the request packet, call <see cref="GetCorrectionResponseAsync(NtpPacket, CancellationToken)" /> instead.
         /// Returned <see cref="NtpPacket" /> contains correction offset in
         /// <see cref="NtpPacket.CorrectionOffset" /> property.
         /// </remarks>
@@ -46,7 +46,7 @@ namespace GuerrillaNtp {
         /// or when there is an error communicating with the server.
         /// </exception>
         /// <seealso cref="GetCorrectionOffsetAsync" />
-        /// <seealso cref="NtpClient.GetCorrectionResponseAsync(CancellationToken)" />
+        /// <seealso cref="GetCorrectionResponseAsync(CancellationToken)" />
         /// <seealso cref="NtpPacket.CorrectionOffset" />
         public async Task<NtpPacket> GetCorrectionResponseAsync(NtpPacket request, CancellationToken Token = default) {
             request.ValidateRequest();

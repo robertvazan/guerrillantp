@@ -17,7 +17,7 @@ namespace GuerrillaNtp
         /// </value>
         public NtpPacket Packet { get; private set; }
 
-        internal NtpException(NtpPacket packet, String message)
+        internal NtpException(NtpPacket packet, string message)
             : base(message)
         {
             Packet = packet;
