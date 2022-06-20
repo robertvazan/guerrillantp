@@ -57,7 +57,7 @@ namespace GuerrillaNtp
 
             packet.ValidateReply(request);
 
-            Last = packet;
+            last = packet;
 
             return packet;
         }

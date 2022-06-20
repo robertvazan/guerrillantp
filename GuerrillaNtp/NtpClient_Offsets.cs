@@ -5,9 +5,20 @@ namespace GuerrillaNtp
 {
     public partial class NtpClient
     {
+        volatile NtpPacket last;
+
         /// <summary>
-        /// Returns the last <see cref="NtpPacket"/> returned by any method of this class.
+        /// Gets result of the last NTP query.
         /// </summary>
-        public NtpPacket Last { get; private set; }
+        /// <value>
+        /// Last <see cref="NtpPacket"/> returned by any method of this class.
+        /// If NTP server has not been queried yet, this property is null.
+        /// </value>
+        /// <remarks>
+        /// If multiple threads query the NTP server in parallel (not recommended),
+        /// this property will hold result of whichever query finishes last.
+        /// This property is safe to access from multiple threads.
+        /// </remarks>
+        public NtpPacket Last => last;
     }
 }

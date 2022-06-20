@@ -19,6 +19,10 @@ namespace GuerrillaNtp
     /// which most importantly means using reasonable polling intervals
     /// and exponential backoff when querying public NTP server.
     /// </para>
+    /// <para>
+    /// This class is intended to be used by only one thread at a time,
+    /// but multi-threaded access is nevertheless tolerated and safe.
+    /// </para>
     /// </remarks>
     public partial class NtpClient
     {
