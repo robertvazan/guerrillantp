@@ -4,31 +4,74 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using NUnit.Framework;
-using GuerrillaNtp;
+using System.Threading.Tasks;
 
-namespace GuerrillaNtp.Tests
-{
+namespace GuerrillaNtp.Tests {
     [TestFixture]
     public class NtpClientTests
     {
-        private IPAddress server = Dns.GetHostEntry("pool.ntp.org").AddressList[0];
+        [Test]
+        public void TestCorrectionOffset_New_Sync() {
+            var client = new NtpClient();
+
+            TestCorrectionOffset(client);
+        }
 
         [Test]
-        public void TestCorrectionOffset()
+        public void TestCorrectionOffset_Default_Sync() {
+            TestCorrectionOffset(NtpClient.Default);
+        }
+
+        [Test]
+        public async Task TestCorrectionOffset_New_Async() {
+            var client = new NtpClient();
+
+            await TestCorrectionOffsetAsync(client);
+        }
+
+        [Test]
+        public async Task TestCorrectionOffset_Default_Async() {
+            await TestCorrectionOffsetAsync(NtpClient.Default);
+        }
+
+        private static void TestCorrectionOffset(NtpClient client)
         {
             const int tries = 3;
             int hits = 0;
-            using (var client = new NtpClient(server))
+
             {
                 for (int i = 0; i < tries; i++)
                 {
                     try
                     {
-                        Console.WriteLine($"Offset #{i + 1}: {client.GetCorrectionOffset()}");
+                        var Offset = client.GetCorrectionOffset();
+
+                        Console.WriteLine($"Offset #{i + 1}: {Offset}");
                         ++hits;
                     }
                     catch (Exception ex)
                     {
+                        Console.WriteLine($"Offset #{i + 1}: {ex}");
+                    }
+                }
+            }
+            Console.WriteLine($"Got {hits} of {tries} replies");
+            Assert.GreaterOrEqual(hits, 1);
+        }
+
+        private static async Task TestCorrectionOffsetAsync(NtpClient client) {
+            const int tries = 3;
+            int hits = 0;
+
+            {
+                for (int i = 0; i < tries; i++) {
+                    try {
+                        var Offset = await client.GetCorrectionOffsetAsync();
+
+                        Console.WriteLine($"Offset #{i + 1}: {Offset}");
+                        ++hits;
+                    }
+                    catch (Exception ex) {
                         Console.WriteLine($"Offset #{i + 1}: {ex}");
                     }
                 }
@@ -43,7 +86,8 @@ namespace GuerrillaNtp.Tests
             var timeout = TimeSpan.FromMilliseconds(500);
 
             // Note: pick a host that *drops* packets. The test will fail if the host merely *rejects* packets.
-            using (var client = new NtpClient(IPAddress.Parse("8.8.8.8")))
+            var client = new NtpClient(IPAddress.Parse("8.8.8.8"));
+
             {
                 client.Timeout = timeout;
 
@@ -71,7 +115,7 @@ namespace GuerrillaNtp.Tests
             var timeout = TimeSpan.FromMilliseconds(500);
 
             // Note: pick a host that *drops* packets. The test will fail if the host merely *rejects* packets.
-            using (var client = new NtpClient(IPAddress.Parse("8.8.8.8"), timeout))
+            var client = new NtpClient(IPAddress.Parse("8.8.8.8"), timeout);
             {
                 var timer = Stopwatch.StartNew();
 

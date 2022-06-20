@@ -4,7 +4,7 @@ namespace GuerrillaNtp
     /// <summary>
     /// Describes SNTP packet mode, i.e. client or server.
     /// </summary>
-    /// <seealso cref="P:GuerrillaNtp.NtpPacket.Mode" />
+    /// <seealso cref="NtpPacket.Mode" />
     public enum NtpMode
     {
         /// <summary>

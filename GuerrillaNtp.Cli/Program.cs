@@ -1,10 +1,7 @@
 // Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
-using GuerrillaNtp;
 using System;
-using System.Net;
 
-namespace GuerrillaNtp.Cli
-{
+namespace GuerrillaNtp.Cli {
     class Program
     {
         static void Main(string[] args)
@@ -15,9 +12,10 @@ namespace GuerrillaNtp.Cli
                 Console.WriteLine("Querying {0}...", host);
                 try
                 {
-                    using (var ntp = new NtpClient(Dns.GetHostAddresses(host)[0]))
+                    var ntp = new NtpClient(servers[0]);
+
                     {
-                        var packet = ntp.Query();
+                        var packet = ntp.GetCorrectionResponse();
                         Console.WriteLine();
                         Console.WriteLine("Received {0}B packet", packet.Bytes.Length);
                         Console.WriteLine("-------------------------------------");
