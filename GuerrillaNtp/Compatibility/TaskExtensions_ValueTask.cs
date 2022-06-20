@@ -1,6 +1,4 @@
 ﻿// Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
-#if NET6_0_OR_GREATER
-
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -16,5 +14,3 @@ namespace GuerrillaNtp {
         }
     }
 }
-
-#endif

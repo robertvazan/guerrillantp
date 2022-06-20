@@ -1,6 +1,4 @@
 ﻿// Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
-#if NET6_0_OR_GREATER
-
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
@@ -116,5 +114,3 @@ namespace GuerrillaNtp {
 
     }
 }
-
-#endif
