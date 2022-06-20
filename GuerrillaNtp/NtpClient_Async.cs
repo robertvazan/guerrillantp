@@ -68,7 +68,7 @@ namespace GuerrillaNtp
 
             packet.ValidateReply(request);
 
-            this.LastCorrectionOffset = packet.CorrectionOffset;
+            Last = packet;
 
             return packet;
         }

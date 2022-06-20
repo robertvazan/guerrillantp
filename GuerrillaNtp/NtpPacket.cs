@@ -260,8 +260,8 @@ namespace GuerrillaNtp
         /// This property throws an exception in request packets.
         /// </value>
         /// <exception cref="NtpException">Thrown when one of the required timestamps is not present.</exception>
-        /// <seealso cref="NtpClient.GetCorrectionOffset" />
-        /// <seealso cref="NtpClient.GetCorrectionOffsetAsync(System.Threading.CancellationToken)"/>
+        /// <seealso cref="Now" />
+        /// <seealso cref="UtcNow"/>
         /// <seealso cref="OriginTimestamp" />
         /// <seealso cref="ReceiveTimestamp" />
         /// <seealso cref="TransmitTimestamp" />
@@ -275,6 +275,30 @@ namespace GuerrillaNtp
                 return TimeSpan.FromTicks(((ReceiveTimestamp.Value - OriginTimestamp.Value) - (DestinationTimestamp.Value - TransmitTimestamp.Value)).Ticks / 2);
             }
         }
+
+        /// <summary>
+        /// Gets NTP time in local timezone.
+        /// </summary>
+        /// <value>
+        /// NTP time in local timezone calculated as <see cref="DateTimeOffset.Now"/> + <see cref="CorrectionOffset"/>.
+        /// </value>
+        /// <remarks>
+        /// This property returns NTP time as <see cref="DateTimeOffset"/>.
+        /// Use its <see cref="DateTimeOffset.LocalDateTime"/> property To obtain NTP time as <see cref="DateTime"/>.
+        /// </remarks>
+        public DateTimeOffset Now => DateTimeOffset.Now + CorrectionOffset;
+
+        /// <summary>
+        /// Gets NTP time in UTC timezone.
+        /// </summary>
+        /// <value>
+        /// NTP time in UTC timezone calculated as <see cref="DateTimeOffset.UtcNow"/> + <see cref="CorrectionOffset"/>.
+        /// </value>
+        /// <remarks>
+        /// This property returns NTP time as <see cref="DateTimeOffset"/>.
+        /// Use its <see cref="DateTimeOffset.UtcDateTime"/> property To obtain NTP time as <see cref="DateTime"/>.
+        /// </remarks>
+        public DateTimeOffset UtcNow => DateTimeOffset.UtcNow + CorrectionOffset;
 
         /// <summary>
         /// Initializes default request packet.
