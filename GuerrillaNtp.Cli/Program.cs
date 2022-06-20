@@ -14,7 +14,7 @@ namespace GuerrillaNtp.Cli
                 try
                 {
                     var ntp = new NtpClient(servers[0]);
-                    var packet = ntp.GetCorrectionResponse();
+                    var packet = ntp.Query();
                     Console.WriteLine();
                     Console.WriteLine("Received {0}B packet", packet.Bytes.Length);
                     Console.WriteLine("-------------------------------------");

@@ -6,32 +6,23 @@ namespace GuerrillaNtp
     public partial class NtpClient
     {
         /// <summary>
-        /// The default <see cref="NtpClient"/> which communicates with pool.ntp.org
-        /// </summary>
-        public static NtpClient Default { get; }
-
-        /// <summary>
         /// The default NTP endpoint (pool.ntp.org).
         /// </summary>
-        public static string DefaultEndpoint { get; }
+        public static readonly string DefaultEndpoint = "pool.ntp.org";
 
         /// <summary>
         /// The default NTP port (123).
         /// </summary>
-        public static int DefaultPort { get; }
+        public const int DefaultPort = 123;
 
         /// <summary>
         /// The default NTP timeout (1 second).
         /// </summary>
-        public static TimeSpan DefaultTimeout { get; }
+        public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(1);
 
-        static NtpClient()
-        {
-            DefaultEndpoint = "pool.ntp.org";
-            DefaultPort = 123;
-            DefaultTimeout = TimeSpan.FromSeconds(1);
-
-            Default = new();
-        }
+        /// <summary>
+        /// The default <see cref="NtpClient"/> which communicates with pool.ntp.org
+        /// </summary>
+        public static readonly NtpClient Default = new();
     }
 }

@@ -48,7 +48,7 @@ namespace GuerrillaNtp.Tests
             {
                 try
                 {
-                    var Offset = client.GetCorrectionOffset();
+                    var Offset = client.Query().CorrectionOffset;
 
                     Console.WriteLine($"Offset #{i + 1}: {Offset}");
                     ++hits;
@@ -71,7 +71,7 @@ namespace GuerrillaNtp.Tests
             {
                 try
                 {
-                    var Offset = await client.GetCorrectionOffsetAsync();
+                    var Offset = (await client.QueryAsync()).CorrectionOffset;
 
                     Console.WriteLine($"Offset #{i + 1}: {Offset}");
                     ++hits;
@@ -99,7 +99,7 @@ namespace GuerrillaNtp.Tests
 
             try
             {
-                client.GetCorrectionOffset();
+                client.Query();
                 Assert.Fail("Shouldn't get here. Expecting timeout!");
             }
             catch (SocketException ex) when (ex.ErrorCode == 10060 || ex.ErrorCode == 10035 || ex.ErrorCode == 110)
@@ -123,7 +123,7 @@ namespace GuerrillaNtp.Tests
 
             try
             {
-                client.GetCorrectionOffset();
+                client.Query();
                 Assert.Fail("Shouldn't get here. Expecting timeout!");
             }
             catch (SocketException ex) when (ex.ErrorCode == 10060 || ex.ErrorCode == 10035 || ex.ErrorCode == 110)

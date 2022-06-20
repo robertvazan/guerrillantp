@@ -6,9 +6,9 @@ namespace GuerrillaNtp
 {
     public partial class NtpClient
     {
-        Socket GetConnection()
+        Socket Connect()
         {
-            var socket = GetSocket();
+            var socket = CreateSocket();
             try
             {
                 socket.Connect(endpoint);
@@ -22,32 +22,27 @@ namespace GuerrillaNtp
         }
 
         /// <summary>
-        /// Queries the SNTP server with configurable <see cref="NtpPacket"/> request.
+        /// Queries the SNTP server.
         /// </summary>
-        /// <param name="request">SNTP request packet to use when querying the network time server.</param>
         /// <returns>SNTP reply packet returned by the server.</returns>
         /// <remarks>
-        /// <see cref="NtpPacket()" /> constructor
-        /// creates valid request packet, which you can further customize.
-        /// If you don't need any customization of the request packet, call <see cref="GetCorrectionResponse(NtpPacket)" /> instead.
         /// Returned <see cref="NtpPacket" /> contains correction offset in
         /// <see cref="NtpPacket.CorrectionOffset" /> property.
         /// </remarks>
         /// <exception cref="NtpException">
-        /// Thrown when the request packet is invalid or when the server responds with invalid reply packet.
+        /// Thrown when the server responds with invalid reply packet.
         /// </exception>
         /// <exception cref="SocketException">
         /// Thrown when no reply is received before <see cref="Timeout" /> is reached
         /// or when there is an error communicating with the server.
         /// </exception>
-        /// <seealso cref="GetCorrectionOffset" />
-        /// <seealso cref="GetCorrectionResponse()" />
         /// <seealso cref="NtpPacket.CorrectionOffset" />
-        public NtpPacket GetCorrectionResponse(NtpPacket request)
+        public NtpPacket Query()
         {
+            var request = new NtpPacket();
             request.ValidateRequest();
 
-            using var socket = GetConnection();
+            using var socket = Connect();
 
             socket.Send(request.Bytes);
             var response = new byte[160];
@@ -65,38 +60,6 @@ namespace GuerrillaNtp
             Last = packet;
 
             return packet;
-        }
-
-        /// <inheritdoc cref="GetCorrectionResponse(NtpPacket)"/>
-        /// <summary>
-        /// Queries the SNTP server with default options.
-        /// </summary>
-        public NtpPacket GetCorrectionResponse()
-        {
-            return GetCorrectionResponse(new NtpPacket());
-        }
-
-        /// <summary>
-        /// Queries the SNTP server and returns correction offset.
-        /// </summary>
-        /// <remarks>
-        /// Use this method if you just want correction offset from the server.
-        /// Call <see cref="GetCorrectionResponse()" /> to obtain <see cref="NtpPacket" />
-        /// with additional information besides <see cref="NtpPacket.CorrectionOffset" />.
-        /// </remarks>
-        /// <returns>
-        /// Offset that should be added to local time to match server time.
-        /// </returns>
-        /// <exception cref="NtpException">Thrown when the server responds with invalid reply packet.</exception>
-        /// <exception cref="SocketException">
-        /// Thrown when no reply is received before <see cref="Timeout" /> is reached
-        /// or when there is an error communicating with the server.
-        /// </exception>
-        /// <seealso cref="GetCorrectionResponse()" />
-        /// <seealso cref="NtpPacket.CorrectionOffset" />
-        public TimeSpan GetCorrectionOffset()
-        {
-            return GetCorrectionResponse().CorrectionOffset;
         }
     }
 }

@@ -309,8 +309,6 @@ namespace GuerrillaNtp
         /// are set appropriately for request packet. Property <see cref="TransmitTimestamp" />
         /// is set to <see cref="DateTime.UtcNow" />.
         /// </remarks>
-        /// <seealso cref="NtpClient.GetCorrectionResponse(NtpPacket)"/>
-        /// <seealso cref="NtpClient.GetCorrectionResponseAsync(NtpPacket, System.Threading.CancellationToken)" />
         public NtpPacket()
             : this(new byte[48])
         {

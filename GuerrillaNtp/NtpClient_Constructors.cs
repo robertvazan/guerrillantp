@@ -11,9 +11,8 @@ namespace GuerrillaNtp
     /// <remarks>
     /// <para>
     /// See <a href="https://guerrillantp.machinezoo.com/">project homepage</a> for guidance on how to use GuerrillaNtp.
-    /// Most applications should just call <see cref="GetCorrectionOffset" />
-    /// after instantiating this class. Method <see cref="GetCorrectionResponse()" />
-    /// can be used to obtain additional details stored in reply <see cref="NtpPacket" />.
+    /// Most applications should just call <see cref="Query()" /> after instantiating this class.
+    /// and then accessing <see cref="NtpPacket.UtcNow" /> or <see cref="NtpPacket.Now" /> on the returned <see cref="NtpPacket" />.
     /// </para>
     /// <para>
     /// It is application responsibility to be a good netizen,
@@ -33,7 +32,7 @@ namespace GuerrillaNtp
 
         readonly EndPoint endpoint;
 
-        Socket GetSocket()
+        Socket CreateSocket()
         {
             var socket = new Socket(SocketType.Dgram, ProtocolType.Udp)
             {
