@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿// Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace GuerrillaNtp {

@@ -1,4 +1,4 @@
-// Part of GuerrillaNt https://guerrillantp.machinezoo.com
+// Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
 using System;
 
 namespace GuerrillaNtp
