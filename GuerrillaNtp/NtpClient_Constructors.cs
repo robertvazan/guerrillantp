@@ -60,14 +60,7 @@ namespace GuerrillaNtp
         }
 
         /// <inheritdoc cref="NtpClient(string, TimeSpan?, int?)"/>
-        public NtpClient(IPEndPoint endpoint, TimeSpan? timeout = default)
-        {
-            this.endpoint = endpoint;
-            this.Timeout = timeout ?? DefaultTimeout;
-        }
-
-        /// <inheritdoc cref="NtpClient(string, TimeSpan?, int?)"/>
-        public NtpClient(DnsEndPoint endpoint, TimeSpan? timeout = default)
+        public NtpClient(EndPoint endpoint, TimeSpan? timeout = default)
         {
             this.endpoint = endpoint;
             this.Timeout = timeout ?? DefaultTimeout;
