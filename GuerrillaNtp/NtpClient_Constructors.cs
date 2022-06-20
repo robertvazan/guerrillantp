@@ -35,19 +35,10 @@ namespace GuerrillaNtp
 
         Socket GetSocket()
         {
-            var addressType = endpoint.AddressFamily;
-            if (addressType is AddressFamily.Unknown or AddressFamily.Unspecified)
-                addressType = AddressFamily.InterNetworkV6;
-
-            var socket = new Socket(addressType, SocketType.Dgram, ProtocolType.Udp)
+            var socket = new Socket(SocketType.Dgram, ProtocolType.Udp)
             {
                 ReceiveTimeout = Convert.ToInt32(Timeout.TotalMilliseconds),
             };
-
-            if (addressType == AddressFamily.InterNetworkV6)
-            {
-                socket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
-            }
 
             return socket;
         }
