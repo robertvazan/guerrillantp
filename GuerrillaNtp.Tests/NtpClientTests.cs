@@ -44,20 +44,18 @@ namespace GuerrillaNtp.Tests
             const int tries = 3;
             int hits = 0;
 
+            for (int i = 0; i < tries; i++)
             {
-                for (int i = 0; i < tries; i++)
+                try
                 {
-                    try
-                    {
-                        var Offset = client.GetCorrectionOffset();
+                    var Offset = client.GetCorrectionOffset();
 
-                        Console.WriteLine($"Offset #{i + 1}: {Offset}");
-                        ++hits;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Offset #{i + 1}: {ex}");
-                    }
+                    Console.WriteLine($"Offset #{i + 1}: {Offset}");
+                    ++hits;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Offset #{i + 1}: {ex}");
                 }
             }
             Console.WriteLine($"Got {hits} of {tries} replies");
@@ -69,20 +67,18 @@ namespace GuerrillaNtp.Tests
             const int tries = 3;
             int hits = 0;
 
+            for (int i = 0; i < tries; i++)
             {
-                for (int i = 0; i < tries; i++)
+                try
                 {
-                    try
-                    {
-                        var Offset = await client.GetCorrectionOffsetAsync();
+                    var Offset = await client.GetCorrectionOffsetAsync();
 
-                        Console.WriteLine($"Offset #{i + 1}: {Offset}");
-                        ++hits;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Offset #{i + 1}: {ex}");
-                    }
+                    Console.WriteLine($"Offset #{i + 1}: {Offset}");
+                    ++hits;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Offset #{i + 1}: {ex}");
                 }
             }
             Console.WriteLine($"Got {hits} of {tries} replies");
@@ -97,26 +93,24 @@ namespace GuerrillaNtp.Tests
             // Note: pick a host that *drops* packets. The test will fail if the host merely *rejects* packets.
             var client = new NtpClient(IPAddress.Parse("8.8.8.8"));
 
+            client.Timeout = timeout;
+
+            var timer = Stopwatch.StartNew();
+
+            try
             {
-                client.Timeout = timeout;
-
-                var timer = Stopwatch.StartNew();
-
-                try
-                {
-                    client.GetCorrectionOffset();
-                    Assert.Fail("Shouldn't get here. Expecting timeout!");
-                }
-                catch (SocketException ex) when (ex.ErrorCode == 10060 || ex.ErrorCode == 10035 || ex.ErrorCode == 110)
-                {
-                    // We expect a socket timeout error
-                }
-
-                timer.Stop();
-
-                Assert.IsTrue(timer.Elapsed >= timeout, timer.Elapsed.ToString());
-                Assert.IsTrue(timer.Elapsed < timeout + timeout + timeout, timer.Elapsed.ToString());
+                client.GetCorrectionOffset();
+                Assert.Fail("Shouldn't get here. Expecting timeout!");
             }
+            catch (SocketException ex) when (ex.ErrorCode == 10060 || ex.ErrorCode == 10035 || ex.ErrorCode == 110)
+            {
+                // We expect a socket timeout error
+            }
+
+            timer.Stop();
+
+            Assert.IsTrue(timer.Elapsed >= timeout, timer.Elapsed.ToString());
+            Assert.IsTrue(timer.Elapsed < timeout + timeout + timeout, timer.Elapsed.ToString());
         }
         [Test]
         public void TestTimeoutViaConstructor()
@@ -125,24 +119,22 @@ namespace GuerrillaNtp.Tests
 
             // Note: pick a host that *drops* packets. The test will fail if the host merely *rejects* packets.
             var client = new NtpClient(IPAddress.Parse("8.8.8.8"), timeout);
+            var timer = Stopwatch.StartNew();
+
+            try
             {
-                var timer = Stopwatch.StartNew();
-
-                try
-                {
-                    client.GetCorrectionOffset();
-                    Assert.Fail("Shouldn't get here. Expecting timeout!");
-                }
-                catch (SocketException ex) when (ex.ErrorCode == 10060 || ex.ErrorCode == 10035 || ex.ErrorCode == 110)
-                {
-                    // We expect a socket timeout error
-                }
-
-                timer.Stop();
-
-                Assert.IsTrue(timer.Elapsed >= timeout, timer.Elapsed.ToString());
-                Assert.IsTrue(timer.Elapsed < timeout + timeout + timeout, timer.Elapsed.ToString());
+                client.GetCorrectionOffset();
+                Assert.Fail("Shouldn't get here. Expecting timeout!");
             }
+            catch (SocketException ex) when (ex.ErrorCode == 10060 || ex.ErrorCode == 10035 || ex.ErrorCode == 110)
+            {
+                // We expect a socket timeout error
+            }
+
+            timer.Stop();
+
+            Assert.IsTrue(timer.Elapsed >= timeout, timer.Elapsed.ToString());
+            Assert.IsTrue(timer.Elapsed < timeout + timeout + timeout, timer.Elapsed.ToString());
         }
     }
 }
