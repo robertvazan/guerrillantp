@@ -1,9 +1,10 @@
 ﻿// Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
 using System;
 
-namespace GuerrillaNtp {
-    public partial class NtpClient {
-        
+namespace GuerrillaNtp
+{
+    public partial class NtpClient
+    {
         /// <summary>
         /// The default <see cref="NtpClient"/> which communicates with pool.ntp.org
         /// </summary>
@@ -24,13 +25,13 @@ namespace GuerrillaNtp {
         /// </summary>
         public static TimeSpan DefaultTimeout { get; }
 
-        static NtpClient() {
+        static NtpClient()
+        {
             DefaultEndpoint = "pool.ntp.org";
             DefaultPort = 123;
             DefaultTimeout = TimeSpan.FromSeconds(1);
 
             Default = new();
         }
-
     }
 }

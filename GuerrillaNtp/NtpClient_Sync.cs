@@ -2,19 +2,23 @@
 using System;
 using System.Net.Sockets;
 
-namespace GuerrillaNtp {
+namespace GuerrillaNtp
+{
     public partial class NtpClient
     {
-        private Socket GetConnection() {
-            var ret = GetSocket();
-            try {
-                ret.Connect(endpoint);
+        Socket GetConnection()
+        {
+            var socket = GetSocket();
+            try
+            {
+                socket.Connect(endpoint);
             }
-            catch {
-                ret.Dispose();
+            catch
+            {
+                socket.Dispose();
                 throw;
             }
-            return ret;
+            return socket;
         }
 
         /// <summary>
@@ -39,7 +43,8 @@ namespace GuerrillaNtp {
         /// <seealso cref="GetCorrectionOffset" />
         /// <seealso cref="GetCorrectionResponse()" />
         /// <seealso cref="NtpPacket.CorrectionOffset" />
-        public NtpPacket GetCorrectionResponse(NtpPacket request) {
+        public NtpPacket GetCorrectionResponse(NtpPacket request)
+        {
             request.ValidateRequest();
 
             using var socket = GetConnection();
@@ -50,23 +55,25 @@ namespace GuerrillaNtp {
             var truncated = new byte[received];
             Array.Copy(response, truncated, received);
 
-            var ret = new NtpPacket(truncated) { 
-                DestinationTimestamp = DateTime.UtcNow 
+            var packet = new NtpPacket(truncated)
+            {
+                DestinationTimestamp = DateTime.UtcNow
             };
 
-            ret.ValidateReply(request);
+            packet.ValidateReply(request);
 
-            this.LastCorrectionOffset = ret.CorrectionOffset;
+            this.LastCorrectionOffset = packet.CorrectionOffset;
 
-            return ret;
+            return packet;
         }
 
         /// <inheritdoc cref="GetCorrectionResponse(NtpPacket)"/>
         /// <summary>
         /// Queries the SNTP server with default options.
         /// </summary>
-        public NtpPacket GetCorrectionResponse() { 
-            return GetCorrectionResponse(new NtpPacket()); 
+        public NtpPacket GetCorrectionResponse()
+        {
+            return GetCorrectionResponse(new NtpPacket());
         }
 
         /// <summary>
@@ -87,9 +94,9 @@ namespace GuerrillaNtp {
         /// </exception>
         /// <seealso cref="GetCorrectionResponse()" />
         /// <seealso cref="NtpPacket.CorrectionOffset" />
-        public TimeSpan GetCorrectionOffset() {
+        public TimeSpan GetCorrectionOffset()
+        {
             return GetCorrectionResponse().CorrectionOffset;
         }
-
     }
 }

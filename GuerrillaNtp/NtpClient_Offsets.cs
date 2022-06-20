@@ -1,12 +1,10 @@
 // Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
 using System;
 
-namespace GuerrillaNtp {
-
+namespace GuerrillaNtp
+{
     public partial class NtpClient
     {
-
-
         /// <summary>
         /// Returns the last <see cref="NtpPacket.CorrectionOffset"/> returned by any method of this class.
         /// </summary>
@@ -31,6 +29,5 @@ namespace GuerrillaNtp {
         /// Returns <see cref="DateTimeOffset.UtcNow"/> + <see cref="LastCorrectionOffset"/>
         /// </summary>
         public DateTimeOffset DateTimeOffsetUtcNow => DateTimeOffset.UtcNow + LastCorrectionOffset;
-
     }
 }

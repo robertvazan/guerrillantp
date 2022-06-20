@@ -6,22 +6,23 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GuerrillaNtp {
+namespace GuerrillaNtp
+{
     public partial class NtpClient
     {
-        private async Task<Socket> GetConnectionAsync(CancellationToken token) {
-            var ret = GetSocket();
-            try {
-                await ret.ConnectAsync(endpoint, token)
-                    .DefaultAwait()
-                    ;
+        async Task<Socket> GetConnectionAsync(CancellationToken token)
+        {
+            var socket = GetSocket();
+            try
+            {
+                await socket.ConnectAsync(endpoint, token).DefaultAwait();
             }
-            catch {
-                ret.Dispose();
+            catch
+            {
+                socket.Dispose();
                 throw;
             }
-
-            return ret;
+            return socket;
         }
 
         /// <summary>
@@ -47,40 +48,37 @@ namespace GuerrillaNtp {
         /// <seealso cref="GetCorrectionOffsetAsync" />
         /// <seealso cref="GetCorrectionResponseAsync(CancellationToken)" />
         /// <seealso cref="NtpPacket.CorrectionOffset" />
-        public async Task<NtpPacket> GetCorrectionResponseAsync(NtpPacket request, CancellationToken Token = default) {
+        public async Task<NtpPacket> GetCorrectionResponseAsync(NtpPacket request, CancellationToken Token = default)
+        {
             request.ValidateRequest();
 
-            using var socket = await GetConnectionAsync(Token)
-                .DefaultAwait()
-                ;
+            using var socket = await GetConnectionAsync(Token).DefaultAwait();
 
-            await socket.SendAsync(request.Bytes,SocketFlags.None, Token)
-                .DefaultAwait()
-                ;
+            await socket.SendAsync(request.Bytes, SocketFlags.None, Token).DefaultAwait();
 
             var response = new byte[160];
-            int received = await socket.ReceiveAsync(response, SocketFlags.None, Token)
-                .DefaultAwait()
-                ;
+            int received = await socket.ReceiveAsync(response, SocketFlags.None, Token).DefaultAwait();
 
             var truncated = new byte[received];
             Array.Copy(response, truncated, received);
-            var ret = new NtpPacket(truncated) {
-                DestinationTimestamp = DateTime.UtcNow 
+            var packet = new NtpPacket(truncated)
+            {
+                DestinationTimestamp = DateTime.UtcNow
             };
 
-            ret.ValidateReply(request);
+            packet.ValidateReply(request);
 
-            this.LastCorrectionOffset = ret.CorrectionOffset;
+            this.LastCorrectionOffset = packet.CorrectionOffset;
 
-            return ret;
+            return packet;
         }
 
         /// <inheritdoc cref="GetCorrectionResponseAsync(NtpPacket, CancellationToken)"/>
         /// <summary>
         /// Queries the SNTP server with default options.
         /// </summary>
-        public Task<NtpPacket> GetCorrectionResponseAsync(CancellationToken Token = default) {
+        public Task<NtpPacket> GetCorrectionResponseAsync(CancellationToken Token = default)
+        {
             return GetCorrectionResponseAsync(new NtpPacket(), Token);
         }
 
@@ -103,14 +101,10 @@ namespace GuerrillaNtp {
         /// </exception>
         /// <seealso cref="GetCorrectionResponse()" />
         /// <seealso cref="NtpPacket.CorrectionOffset" />
-        public async Task<TimeSpan> GetCorrectionOffsetAsync(CancellationToken Token = default) {
-            var tret = await GetCorrectionResponseAsync(Token)
-                .DefaultAwait()
-                ;
-            
-            var ret = tret.CorrectionOffset;
-            return ret;
+        public async Task<TimeSpan> GetCorrectionOffsetAsync(CancellationToken Token = default)
+        {
+            var packet = await GetCorrectionResponseAsync(Token).DefaultAwait();
+            return packet.CorrectionOffset;
         }
-
     }
 }

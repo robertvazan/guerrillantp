@@ -3,34 +3,39 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using NUnit.Framework;
 using System.Threading.Tasks;
+using NUnit.Framework;
 
-namespace GuerrillaNtp.Tests {
+namespace GuerrillaNtp.Tests
+{
     [TestFixture]
     public class NtpClientTests
     {
         [Test]
-        public void TestCorrectionOffset_New_Sync() {
+        public void TestCorrectionOffset_New_Sync()
+        {
             var client = new NtpClient();
 
             TestCorrectionOffset(client);
         }
 
         [Test]
-        public void TestCorrectionOffset_Default_Sync() {
+        public void TestCorrectionOffset_Default_Sync()
+        {
             TestCorrectionOffset(NtpClient.Default);
         }
 
         [Test]
-        public async Task TestCorrectionOffset_New_Async() {
+        public async Task TestCorrectionOffset_New_Async()
+        {
             var client = new NtpClient();
 
             await TestCorrectionOffsetAsync(client);
         }
 
         [Test]
-        public async Task TestCorrectionOffset_Default_Async() {
+        public async Task TestCorrectionOffset_Default_Async()
+        {
             await TestCorrectionOffsetAsync(NtpClient.Default);
         }
 
@@ -59,19 +64,23 @@ namespace GuerrillaNtp.Tests {
             Assert.GreaterOrEqual(hits, 1);
         }
 
-        private static async Task TestCorrectionOffsetAsync(NtpClient client) {
+        private static async Task TestCorrectionOffsetAsync(NtpClient client)
+        {
             const int tries = 3;
             int hits = 0;
 
             {
-                for (int i = 0; i < tries; i++) {
-                    try {
+                for (int i = 0; i < tries; i++)
+                {
+                    try
+                    {
                         var Offset = await client.GetCorrectionOffsetAsync();
 
                         Console.WriteLine($"Offset #{i + 1}: {Offset}");
                         ++hits;
                     }
-                    catch (Exception ex) {
+                    catch (Exception ex)
+                    {
                         Console.WriteLine($"Offset #{i + 1}: {ex}");
                     }
                 }

@@ -3,7 +3,8 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 
-namespace GuerrillaNtp {
+namespace GuerrillaNtp
+{
     /// <summary>
     /// Represents UDP socket used to communicate with RFC4330-compliant SNTP/NTP server.
     /// </summary>
@@ -22,7 +23,6 @@ namespace GuerrillaNtp {
     /// </remarks>
     public partial class NtpClient
     {
-
         /// <summary>
         /// Gets or sets the timeout for SNTP queries.
         /// </summary>
@@ -31,48 +31,53 @@ namespace GuerrillaNtp {
         /// </value>
         public TimeSpan Timeout { get; set; }
 
-        private readonly EndPoint endpoint;
+        readonly EndPoint endpoint;
 
-        private Socket GetSocket() {
-            var AddressType = endpoint.AddressFamily;
-            if(AddressType is AddressFamily.Unknown or AddressFamily.Unspecified) {
-                AddressType = AddressFamily.InterNetworkV6;
-            }
+        Socket GetSocket()
+        {
+            var addressType = endpoint.AddressFamily;
+            if (addressType is AddressFamily.Unknown or AddressFamily.Unspecified)
+                addressType = AddressFamily.InterNetworkV6;
 
-            var ret = new Socket(AddressType, SocketType.Dgram, ProtocolType.Udp)
+            var socket = new Socket(addressType, SocketType.Dgram, ProtocolType.Udp)
             {
                 ReceiveTimeout = Convert.ToInt32(Timeout.TotalMilliseconds),
             };
 
-            if (AddressType == AddressFamily.InterNetworkV6) {
-                ret.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
+            if (addressType == AddressFamily.InterNetworkV6)
+            {
+                socket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
             }
 
-            return ret;
+            return socket;
         }
 
         /// <summary>
         /// Creates a new <see cref="NtpClient"/> using <see cref="DefaultEndpoint"/>, <see cref="DefaultPort"/>, and <see cref="DefaultTimeout"/>.
         /// </summary>
-        public NtpClient() {
+        public NtpClient()
+        {
             this.endpoint = new DnsEndPoint(DefaultEndpoint, DefaultPort);
             this.Timeout = DefaultTimeout;
         }
 
         /// <inheritdoc cref="NtpClient(string, TimeSpan?, int?)"/>
-        public NtpClient(IPAddress endpoint, TimeSpan? timeout = default, int? port = default) {
+        public NtpClient(IPAddress endpoint, TimeSpan? timeout = default, int? port = default)
+        {
             this.endpoint = new IPEndPoint(endpoint, port ?? DefaultPort);
             this.Timeout = timeout ?? DefaultTimeout;
         }
 
         /// <inheritdoc cref="NtpClient(string, TimeSpan?, int?)"/>
-        public NtpClient(IPEndPoint endpoint, TimeSpan? timeout = default) {
+        public NtpClient(IPEndPoint endpoint, TimeSpan? timeout = default)
+        {
             this.endpoint = endpoint;
             this.Timeout = timeout ?? DefaultTimeout;
         }
 
         /// <inheritdoc cref="NtpClient(string, TimeSpan?, int?)"/>
-        public NtpClient(DnsEndPoint endpoint, TimeSpan? timeout = default) {
+        public NtpClient(DnsEndPoint endpoint, TimeSpan? timeout = default)
+        {
             this.endpoint = endpoint;
             this.Timeout = timeout ?? DefaultTimeout;
         }
@@ -83,19 +88,10 @@ namespace GuerrillaNtp {
         /// <param name="endpoint">The NTP server</param>
         /// <param name="timeout">The amount of time to wait for a reply</param>
         /// <param name="port">The NTP port</param>
-        public NtpClient(string endpoint, TimeSpan? timeout = default, int? port = default) {
+        public NtpClient(string endpoint, TimeSpan? timeout = default, int? port = default)
+        {
             this.endpoint = new DnsEndPoint(endpoint, port ?? DefaultPort);
             this.Timeout = timeout ?? DefaultTimeout;
         }
-
-
-
-
-
-
-
-
-
-
     }
 }
