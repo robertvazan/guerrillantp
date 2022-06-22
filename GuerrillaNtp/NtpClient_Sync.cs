@@ -24,42 +24,25 @@ namespace GuerrillaNtp
         /// <summary>
         /// Queries the SNTP server.
         /// </summary>
-        /// <returns>SNTP reply packet returned by the server.</returns>
-        /// <remarks>
-        /// Returned <see cref="NtpPacket" /> contains correction offset in
-        /// <see cref="NtpPacket.CorrectionOffset" /> property.
-        /// </remarks>
+        /// <returns>Network time reported by the server.</returns>
         /// <exception cref="NtpException">
-        /// Thrown when the server responds with invalid reply packet.
+        /// Thrown when the server sends invalid response.
         /// </exception>
         /// <exception cref="SocketException">
         /// Thrown when no reply is received before <see cref="Timeout" /> is reached
         /// or when there is an error communicating with the server.
         /// </exception>
-        /// <seealso cref="NtpPacket.CorrectionOffset" />
-        public NtpPacket Query()
+        public NtpTime Query()
         {
-            var request = new NtpPacket();
-            request.ValidateRequest();
-
             using var socket = Connect();
-
-            socket.Send(request.Bytes);
-            var response = new byte[160];
-            int received = socket.Receive(response);
-            var truncated = new byte[received];
-            Array.Copy(response, truncated, received);
-
-            var packet = new NtpPacket(truncated)
-            {
-                DestinationTimestamp = DateTime.UtcNow
-            };
-
-            packet.ValidateReply(request);
-
-            last = packet;
-
-            return packet;
+            var request = new NtpRequest();
+            socket.Send(request.ToPacket().ToBytes());
+            var buffer = new byte[160];
+            int length = socket.Receive(buffer);
+            var response = NtpResponse.FromPacket(NtpPacket.FromBytes(buffer, length));
+            if (!response.Matches(request))
+                throw new NtpException("Response does not match the request.");
+            return last = new NtpTime(response);
         }
     }
 }

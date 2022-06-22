@@ -12,7 +12,7 @@ namespace GuerrillaNtp
     /// <para>
     /// See <a href="https://guerrillantp.machinezoo.com/">project homepage</a> for guidance on how to use GuerrillaNtp.
     /// Most applications should just call <see cref="Query()" /> after instantiating this class.
-    /// and then accessing <see cref="NtpPacket.UtcNow" /> or <see cref="NtpPacket.Now" /> on the returned <see cref="NtpPacket" />.
+    /// and then accessing <see cref="NtpTime.UtcNow" /> or <see cref="NtpTime.Now" /> on the returned <see cref="NtpTime" />.
     /// </para>
     /// <para>
     /// It is application responsibility to be a good netizen,

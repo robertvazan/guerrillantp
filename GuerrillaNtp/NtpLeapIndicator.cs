@@ -4,6 +4,7 @@ namespace GuerrillaNtp
     /// <summary>
     /// Represents leap second warning from the server that instructs the client to add or remove leap second.
     /// </summary>
+    /// <seealso cref="NtpResponse.LeapIndicator" />
     /// <seealso cref="NtpPacket.LeapIndicator" />
     public enum NtpLeapIndicator
     {

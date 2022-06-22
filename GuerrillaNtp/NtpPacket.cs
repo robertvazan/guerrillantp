@@ -1,380 +1,274 @@
 // Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
 using System;
+using System.Buffers.Binary;
+using System.Diagnostics.SymbolStore;
 
 namespace GuerrillaNtp
 {
     /// <summary>
-    /// Represents RFC4330 SNTP packet used for communication to and from a network time server.
+    /// RFC4330 SNTP packet used for communication to and from a network time server.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// See <a href="https://guerrillantp.machinezoo.com/">project homepage</a> for guidance on how to use GuerrillaNtp.
-    /// Most applications should just use the <see cref="CorrectionOffset" /> property
-    /// or even better call <see cref="M:GuerrillaNtp.NtpClient.GetCorrectionOffset" />.
-    /// </para>
-    /// <para>
     /// The same data structure represents both request and reply packets.
-    /// Request and reply differ in which properties are set and to what values.
-    /// </para>
-    /// <para>
-    /// The only real property is <see cref="Bytes" />.
-    /// All other properties read from and write to the underlying byte array
-    /// with the exception of <see cref="DestinationTimestamp" />,
-    /// which is not part of the packet on network and it is instead set locally after receiving the packet.
-    /// </para>
+    /// Classes <see cref="NtpRequest" /> and <see cref="NtpResponse" />
+    /// provide highewr level representation specialized for requests and responses.
+    /// Most applications should just use <see cref="NtpClient.Query()" /> and properties in <see cref="NtpTime" />.
     /// </remarks>
-    /// <seealso cref="NtpClient" />
-    /// <seealso cref="CorrectionOffset" />
-    public class NtpPacket
+    /// <seealso cref="NtpRequest" />
+    /// <seealso cref="NtpResponse" />
+    public record NtpPacket
     {
         static readonly DateTime epoch = new DateTime(1900, 1, 1);
 
         /// <summary>
-        /// Gets RFC4330-encoded SNTP packet.
+        /// Leap second indicator.
         /// </summary>
         /// <value>
-        /// Byte array containing RFC4330-encoded SNTP packet. It is at least 48 bytes long.
+        /// Leap second warning, if any. Defaults to <see cref="NtpLeapIndicator.NoWarning" />.
+        /// Special value <see cref="NtpLeapIndicator.AlarmCondition" /> indicates unsynchronized server clock.
+        /// Response-only property. Leave on default in requests.
         /// </value>
-        /// <remarks>
-        /// This is the only real property. All other properties except
-        /// <see cref="DestinationTimestamp" /> read from or write to this byte array.
-        /// </remarks>
-        public byte[] Bytes { get; private set; }
+        public NtpLeapIndicator LeapIndicator { get; init; } = NtpLeapIndicator.NoWarning;
 
         /// <summary>
-        /// Gets the leap second indicator.
+        /// SNTP protocol version number.
         /// </summary>
         /// <value>
-        /// Leap second warning, if any. Special value
-        /// <see cref="NtpLeapIndicator.AlarmCondition" /> indicates unsynchronized server clock.
-        /// Default is <see cref="NtpLeapIndicator.NoWarning" />.
+        /// SNTP protocol version. Defaults to 4, which is the latest version at the time of writing.
         /// </value>
         /// <remarks>
-        /// Only servers fill in this property. Clients can consult this property for possible leap second warning.
-        /// </remarks>
-        public NtpLeapIndicator LeapIndicator
-        {
-            get { return (NtpLeapIndicator)((Bytes[0] & 0xC0) >> 6); }
-        }
-
-        /// <summary>
-        /// Gets or sets protocol version number.
-        /// </summary>
-        /// <value>
-        /// SNTP protocol version. Default is 4, which is the latest version at the time of this writing.
-        /// </value>
-        /// <remarks>
-        /// In request packets, clients should leave this property at default value 4.
         /// Servers usually reply with the same protocol version.
         /// </remarks>
-        public int VersionNumber
-        {
-            get { return (Bytes[0] & 0x38) >> 3; }
-            set { Bytes[0] = (byte)((Bytes[0] & ~0x38) | value << 3); }
-        }
+        public int VersionNumber { get; init; } = 4;
 
         /// <summary>
-        /// Gets or sets SNTP packet mode, i.e. whether this is client or server packet.
+        /// SNTP packet mode, i.e. client or server.
         /// </summary>
         /// <value>
-        /// SNTP packet mode. Default is <see cref="NtpMode.Client" /> in newly created packets.
-        /// Server reply should have this property set to <see cref="NtpMode.Server" />.
+        /// SNTP packet mode. Defaults to <see cref="NtpMode.Client" />, indicating request packet.
+        /// Server response should have this property set to <see cref="NtpMode.Server" />.
         /// </value>
-        public NtpMode Mode
-        {
-            get { return (NtpMode)(Bytes[0] & 0x07); }
-            set { Bytes[0] = (byte)((Bytes[0] & ~0x07) | (int)value); }
-        }
+        public NtpMode Mode { get; init; } = NtpMode.Client;
 
         /// <summary>
-        /// Gets server's distance from the reference clock.
+        /// Server's distance from reference clock.
         /// </summary>
         /// <value>
-        /// <para>
-        /// Distance from the reference clock. This property is set only in server reply packets.
-        /// Servers connected directly to reference clock hardware set this property to 1.
-        /// Statum number is incremented by 1 on every hop down the NTP server hierarchy.
-        /// </para>
-        /// <para>
+        /// Response-only property. Leave zeroed in requests.
+        /// Value 1 indicates primary source connected to hardware clock.
+        /// Values 2-15 indicate increasing number of hops from primary source.
         /// Special value 0 indicates that this packet is a Kiss-o'-Death message
         /// with kiss code stored in <see cref="ReferenceId" />.
-        /// </para>
         /// </value>
-        public int Stratum { get { return Bytes[1]; } }
+        public int Stratum { get; init; } = 0;
 
         /// <summary>
-        /// Gets server's preferred polling interval.
+        /// Server's preferred polling interval.
         /// </summary>
         /// <value>
         /// Polling interval in log₂ seconds, e.g. 4 stands for 16s and 17 means 131,072s.
+        /// Response-only property. Leave zeroed in requests.
         /// </value>
-        public int Poll { get { return Bytes[2]; } }
+        /// <remarks>
+        /// <see cref="NtpClient" /> does not enforce the polling interval.
+        /// It is application responsibility to be a good netizen and respect server's policy.
+        /// </remarks>
+        public int PollInterval { get; init; } = 0;
 
         /// <summary>
-        /// Gets the precision of server clock.
+        /// Precision of server clock.
         /// </summary>
         /// <value>
-        /// Clock precision in log₂ seconds, e.g. -20 for microsecond precision.
+        /// Clock precision in log₂ seconds, e.g. -19 for at least microsecond precision.
+        /// Response-only property. Leave zeroed in requests.
         /// </value>
-        public int Precision { get { return (sbyte)Bytes[3]; } }
+        public int Precision { get; init; } = 0;
 
         /// <summary>
-        /// Gets the total round-trip delay from the server to the reference clock.
+        /// Total round-trip delay from the server to the reference clock.
         /// </summary>
         /// <value>
         /// Round-trip delay to the reference clock. Normally a positive value smaller than one second.
+        /// Response-only property. Leave zeroed in requests.
         /// </value>
-        public TimeSpan RootDelay { get { return GetTimeSpan32(4); } }
+        public TimeSpan RootDelay { get; init; } = TimeSpan.Zero;
 
         /// <summary>
-        /// Gets the estimated error in time reported by the server.
+        /// Estimated error in time reported by the server.
         /// </summary>
         /// <value>
-        /// Estimated error in time reported by the server. Normally a positive value smaller than one second.
+        /// Estimated error in reported time. Normally a positive value smaller than one second.
+        /// Response-only property. Leave zeroed in requests.
         /// </value>
-        public TimeSpan RootDispersion { get { return GetTimeSpan32(8); } }
+        public TimeSpan RootDispersion { get; init; } = TimeSpan.Zero;
 
         /// <summary>
-        /// Gets the ID of the time source used by the server or Kiss-o'-Death code sent by the server.
+        /// ID of the time source used by the server or Kiss-o'-Death code.
         /// </summary>
         /// <value>
-        /// <para>
-        /// ID of server's time source or Kiss-o'-Death code.
-        /// Purpose of this property depends on value of <see cref="Stratum" /> property.
-        /// </para>
-        /// <para>
         /// Stratum 1 servers write here one of several special values that describe the kind of hardware clock they use.
-        /// </para>
-        /// <para>
         /// Stratum 2 and lower servers set this property to IPv4 address of their upstream server.
         /// If upstream server has IPv6 address, the address is hashed, because it doesn't fit in this property.
-        /// </para>
-        /// <para>
         /// When server sets <see cref="Stratum" /> to special value 0,
         /// this property contains so called kiss code that instructs the client to stop querying the server.
-        /// </para>
+        /// Response-only property. Leave zeroed in requests.
         /// </value>
-        public uint ReferenceId { get { return GetUInt32BE(12); } }
+        public uint ReferenceId { get; init; } = 0;
 
         /// <summary>
-        /// Gets or sets the time when the server clock was last set or corrected.
+        /// Time when the server clock was last set or corrected.
         /// </summary>
         /// <value>
-        /// Time when the server clock was last set or corrected or <c>null</c> when not specified.
+        /// UTC time when the server clock was last set or corrected. Null when not specified.
+        /// Response-only property. Leave nulled in requests.
         /// </value>
-        /// <remarks>
-        /// This Property is usually set only by servers. It usually lags server's current time by several minutes,
-        /// so don't use this property for time synchronization.
-        /// </remarks>
-        public DateTime? ReferenceTimestamp { get { return GetDateTime64(16); } set { SetDateTime64(16, value); } }
+        public DateTime? ReferenceTimestamp { get; init; } = null;
 
         /// <summary>
-        /// Gets or sets the time when the client sent its request.
+        /// Time when the client sent its request.
         /// </summary>
         /// <value>
-        /// This property is <c>null</c> in request packets.
-        /// In reply packets, it is the time when the client sent its request.
-        /// Servers copy this value from <see cref="TransmitTimestamp" />
-        /// that they find in received request packet.
+        /// In response packet, this is the UTC time when client sent its request.
+        /// Servers copy this value from request's <see cref="TransmitTimestamp" />.
+        /// Response-only property. Leave nulled in requests.
         /// </value>
-        /// <seealso cref="CorrectionOffset" />
-        /// <seealso cref="RoundTripTime" />
-        public DateTime? OriginTimestamp { get { return GetDateTime64(24); } set { SetDateTime64(24, value); } }
+        public DateTime? OriginTimestamp { get; init; } = null;
 
         /// <summary>
-        /// Gets or sets the time when the request was received by the server.
+        /// Time when the request was received by the server.
         /// </summary>
         /// <value>
-        /// This property is <c>null</c> in request packets.
-        /// In reply packets, it is the time when the server received client request.
+        /// UTC time when the server received client's request.
+        /// Response-only property. Leave nulled in requests.
         /// </value>
-        /// <seealso cref="CorrectionOffset" />
-        /// <seealso cref="RoundTripTime" />
-        public DateTime? ReceiveTimestamp { get { return GetDateTime64(32); } set { SetDateTime64(32, value); } }
+        public DateTime? ReceiveTimestamp { get; init; } = null;
 
         /// <summary>
-        /// Gets or sets the time when the packet was sent.
+        /// Time when the packet was sent.
         /// </summary>
         /// <value>
-        /// Time when the packet was sent. It should never be <c>null</c>.
+        /// UTC time when the packet was sent. Both client and server set this property.
         /// Default value is <see cref="DateTime.UtcNow" />.
+        /// This property can be technically null, but doing so is not recommended.
         /// </value>
-        /// <remarks>
-        /// This property must be set by both clients and servers.
-        /// </remarks>
-        /// <seealso cref="CorrectionOffset" />
-        /// <seealso cref="RoundTripTime" />
-        public DateTime? TransmitTimestamp { get { return GetDateTime64(40); } set { SetDateTime64(40, value); } }
+        public DateTime? TransmitTimestamp { get; init; } = DateTime.UtcNow;
 
-        /// <summary>
-        /// Gets or sets the time of reception of response SNTP packet on the client.
-        /// </summary>
-        /// <value>
-        /// Time of reception of response SNTP packet on the client. It is <c>null</c> in request packets.
-        /// </value>
-        /// <remarks>
-        /// This property is not part of the protocol.
-        /// It is set by <see cref="NtpClient" /> when reply packet is received.
-        /// </remarks>
-        /// <seealso cref="CorrectionOffset" />
-        /// <seealso cref="RoundTripTime" />
-        public DateTime? DestinationTimestamp { get; set; }
-
-        /// <summary>
-        /// Gets the round-trip time to the server.
-        /// </summary>
-        /// <value>
-        /// Time the request spent travelling to the server plus the time the reply spent travelling back.
-        /// This is calculated from timestamps in the packet as <c>(t1 - t0) + (t3 - t2)</c>
-        /// where t0 is <see cref="OriginTimestamp" />,
-        /// t1 is <see cref="ReceiveTimestamp" />,
-        /// t2 is <see cref="TransmitTimestamp" />,
-        /// and t3 is <see cref="DestinationTimestamp" />.
-        /// This property throws an exception in request packets.
-        /// </value>
-        /// <exception cref="NtpException">Thrown when one of the required timestamps is not present.</exception>
-        /// <seealso cref="OriginTimestamp" />
-        /// <seealso cref="ReceiveTimestamp" />
-        /// <seealso cref="TransmitTimestamp" />
-        /// <seealso cref="DestinationTimestamp" />
-        /// <seealso cref="CorrectionOffset" />
-        public TimeSpan RoundTripTime
+        static TimeSpan GetTimeSpan32(ReadOnlySpan<byte> buffer) => TimeSpan.FromSeconds(BinaryPrimitives.ReadInt32BigEndian(buffer) / (double)(1 << 16));
+        static void SetTimeSpan32(Span<byte> buffer, TimeSpan time) => BinaryPrimitives.WriteInt32BigEndian(buffer, (int)(time.TotalSeconds * (1 << 16)));
+        static DateTime? GetDateTime64(ReadOnlySpan<byte> buffer)
         {
-            get
-            {
-                CheckTimestamps();
-                return (ReceiveTimestamp.Value - OriginTimestamp.Value) + (DestinationTimestamp.Value - TransmitTimestamp.Value);
-            }
-        }
-
-        /// <summary>
-        /// Gets the offset that should be added to local time to synchronize it with server time.
-        /// </summary>
-        /// <value>
-        /// Time difference between server and client. It should be added to local time to get server time.
-        /// It is calculated from timestamps in the packet as <c>0.5 * ((t1 - t0) - (t3 - t2))</c>
-        /// where t0 is <see cref="OriginTimestamp" />,
-        /// t1 is <see cref="ReceiveTimestamp" />,
-        /// t2 is <see cref="TransmitTimestamp" />,
-        /// and t3 is <see cref="DestinationTimestamp" />.
-        /// This property throws an exception in request packets.
-        /// </value>
-        /// <exception cref="NtpException">Thrown when one of the required timestamps is not present.</exception>
-        /// <seealso cref="Now" />
-        /// <seealso cref="UtcNow"/>
-        /// <seealso cref="OriginTimestamp" />
-        /// <seealso cref="ReceiveTimestamp" />
-        /// <seealso cref="TransmitTimestamp" />
-        /// <seealso cref="DestinationTimestamp" />
-        /// <seealso cref="RoundTripTime" />
-        public TimeSpan CorrectionOffset
-        {
-            get
-            {
-                CheckTimestamps();
-                return TimeSpan.FromTicks(((ReceiveTimestamp.Value - OriginTimestamp.Value) - (DestinationTimestamp.Value - TransmitTimestamp.Value)).Ticks / 2);
-            }
-        }
-
-        /// <summary>
-        /// Gets NTP time in local timezone.
-        /// </summary>
-        /// <value>
-        /// NTP time in local timezone calculated as <see cref="DateTimeOffset.Now"/> + <see cref="CorrectionOffset"/>.
-        /// </value>
-        /// <remarks>
-        /// This property returns NTP time as <see cref="DateTimeOffset"/>.
-        /// Use its <see cref="DateTimeOffset.LocalDateTime"/> property To obtain NTP time as <see cref="DateTime"/>.
-        /// </remarks>
-        public DateTimeOffset Now => DateTimeOffset.Now + CorrectionOffset;
-
-        /// <summary>
-        /// Gets NTP time in UTC timezone.
-        /// </summary>
-        /// <value>
-        /// NTP time in UTC timezone calculated as <see cref="DateTimeOffset.UtcNow"/> + <see cref="CorrectionOffset"/>.
-        /// </value>
-        /// <remarks>
-        /// This property returns NTP time as <see cref="DateTimeOffset"/>.
-        /// Use its <see cref="DateTimeOffset.UtcDateTime"/> property To obtain NTP time as <see cref="DateTime"/>.
-        /// </remarks>
-        public DateTimeOffset UtcNow => DateTimeOffset.UtcNow + CorrectionOffset;
-
-        /// <summary>
-        /// Initializes default request packet.
-        /// </summary>
-        /// <remarks>
-        /// Created request packet can be passed to <see cref="M:GuerrillaNtp.NtpClient.Query(GuerrillaNtp.NtpPacket)" />.
-        /// Properties <see cref="Mode" /> and <see cref="VersionNumber" />
-        /// are set appropriately for request packet. Property <see cref="TransmitTimestamp" />
-        /// is set to <see cref="DateTime.UtcNow" />.
-        /// </remarks>
-        public NtpPacket()
-            : this(new byte[48])
-        {
-            Mode = NtpMode.Client;
-            VersionNumber = 4;
-            TransmitTimestamp = DateTime.UtcNow;
-        }
-
-        internal NtpPacket(byte[] bytes)
-        {
-            if (bytes.Length < 48)
-                throw new NtpException(null, "SNTP reply packet must be at least 48 bytes long.");
-            Bytes = bytes;
-        }
-
-        internal void ValidateRequest()
-        {
-            if (Mode != NtpMode.Client)
-                throw new NtpException(this, "This is not a request SNTP packet.");
-            if (VersionNumber == 0)
-                throw new NtpException(this, "Protocol version of the request is not specified.");
-            if (TransmitTimestamp == null)
-                throw new NtpException(this, "TransmitTimestamp must be set in request packet.");
-        }
-
-        internal void ValidateReply(NtpPacket request)
-        {
-            if (Mode != NtpMode.Server)
-                throw new NtpException(this, "This is not a reply SNTP packet.");
-            if (VersionNumber == 0)
-                throw new NtpException(this, "Protocol version of the reply is not specified.");
-            if (Stratum == 0)
-                throw new NtpException(this, String.Format("Received Kiss-o'-Death SNTP packet with code 0x{0:x}.", ReferenceId));
-            if (LeapIndicator == NtpLeapIndicator.AlarmCondition)
-                throw new NtpException(this, "SNTP server has unsynchronized clock.");
-            CheckTimestamps();
-            if (OriginTimestamp != request.TransmitTimestamp)
-                throw new NtpException(this, "Origin timestamp in reply doesn't match transmit timestamp in request.");
-        }
-
-        void CheckTimestamps()
-        {
-            if (OriginTimestamp == null)
-                throw new NtpException(this, "Origin timestamp is missing.");
-            if (ReceiveTimestamp == null)
-                throw new NtpException(this, "Receive timestamp is missing.");
-            if (TransmitTimestamp == null)
-                throw new NtpException(this, "Transmit timestamp is missing.");
-            if (DestinationTimestamp == null)
-                throw new NtpException(this, "Destination timestamp is missing.");
-        }
-
-        DateTime? GetDateTime64(int offset)
-        {
-            var field = GetUInt64BE(offset);
+            var field = BinaryPrimitives.ReadUInt64BigEndian(buffer);
             if (field == 0)
                 return null;
-            return new DateTime(epoch.Ticks + Convert.ToInt64(field * (1.0 / (1L << 32) * 10000000.0)));
+            return new DateTime(epoch.Ticks + Convert.ToInt64(field * (1.0 / (1L << 32) * 10000000.0)), DateTimeKind.Utc);
         }
-        void SetDateTime64(int offset, DateTime? value) { SetUInt64BE(offset, value == null ? 0 : Convert.ToUInt64((value.Value.Ticks - epoch.Ticks) * (0.0000001 * (1L << 32)))); }
-        TimeSpan GetTimeSpan32(int offset) { return TimeSpan.FromSeconds(GetInt32BE(offset) / (double)(1 << 16)); }
-        ulong GetUInt64BE(int offset) { return SwapEndianness(BitConverter.ToUInt64(Bytes, offset)); }
-        void SetUInt64BE(int offset, ulong value) { Array.Copy(BitConverter.GetBytes(SwapEndianness(value)), 0, Bytes, offset, 8); }
-        int GetInt32BE(int offset) { return (int)GetUInt32BE(offset); }
-        uint GetUInt32BE(int offset) { return SwapEndianness(BitConverter.ToUInt32(Bytes, offset)); }
-        static uint SwapEndianness(uint x) { return ((x & 0xff) << 24) | ((x & 0xff00) << 8) | ((x & 0xff0000) >> 8) | ((x & 0xff000000) >> 24); }
-        static ulong SwapEndianness(ulong x) { return ((ulong)SwapEndianness((uint)x) << 32) | SwapEndianness((uint)(x >> 32)); }
+        void SetDateTime64(Span<byte> buffer, DateTime? time)
+        {
+            BinaryPrimitives.WriteUInt64BigEndian(buffer, time == null ? 0 : Convert.ToUInt64((time.Value.Ticks - epoch.Ticks) * (0.0000001 * (1L << 32))));
+        }
+
+        /// <summary>
+        /// Checks whether this object describes valid SNTP packet.
+        /// </summary>
+        /// <exception cref="NtpException">
+        /// Thrown if this is not a valid SNTP packet.
+        /// </exception>
+        /// <remarks>
+        /// Object properties do not perform validation. Call this method to validate the packet.
+        /// <see cref="FromBytes(byte[], int)" /> and <see cref="ToBytes()" /> perform validation automatically.
+        /// </remarks>
+        public void Validate()
+        {
+            if (VersionNumber < 1 || VersionNumber > 7)
+                throw new NtpException("Invalid SNTP protocol version.");
+            if (!Enum.IsDefined(LeapIndicator))
+                throw new NtpException("Invalid leap second indicator value.");
+            if (!Enum.IsDefined(Mode))
+                throw new NtpException("Invalid NTP protocol mode.");
+            if ((byte)Stratum != Stratum)
+                throw new NtpException("Invalid stratum number.");
+            if ((byte)PollInterval != PollInterval)
+                throw new NtpException("Poll interval out of range.");
+            if ((sbyte)Precision != Precision)
+                throw new NtpException("Precision out of range.");
+            if (Math.Abs(RootDelay.TotalSeconds) > 32000)
+                throw new NtpException("Root delay out of range.");
+            if (RootDispersion.Ticks < 0 || RootDispersion.TotalSeconds > 32000)
+                throw new NtpException("Root dispersion out of range.");
+            if (ReferenceTimestamp != null && ReferenceTimestamp.Value.Kind != DateTimeKind.Utc)
+                throw new NtpException("Reference timestamp must have UTC timezone.");
+            if (OriginTimestamp != null && OriginTimestamp.Value.Kind != DateTimeKind.Utc)
+                throw new NtpException("Origin timestamp must have UTC timezone.");
+            if (ReceiveTimestamp != null && ReceiveTimestamp.Value.Kind != DateTimeKind.Utc)
+                throw new NtpException("Receive timestamp must have UTC timezone.");
+            if (TransmitTimestamp != null && TransmitTimestamp.Value.Kind != DateTimeKind.Utc)
+                throw new NtpException("Transmit timestamp must have UTC timezone.");
+        }
+
+        /// <summary>
+        /// Parses and validates SNTP packet.
+        /// </summary>
+        /// <param name="buffer">
+        /// RFC4330 SNTPv4 packet. Previous versions should be also parsed without issue.
+        /// Extra bytes at the end of the buffer are ignored.
+        /// </param>
+        /// <param name="length">Number of bytes in the buffer that are actually filled with data.</param>
+        /// <returns>
+        /// Parsed SNTP packet. It has been already validated as if by calling <see cref="Validate()" />.
+        /// </returns>
+        /// <exception cref="NtpException">
+        /// Thrown when the buffer does not contain valid SNTP packet.
+        /// </exception>
+        public static NtpPacket FromBytes(byte[] buffer, int length)
+        {
+            if (length < 48 || length > buffer.Length)
+                throw new NtpException("NTP packet must be at least 48 bytes long.");
+            var packet = new NtpPacket
+            {
+                LeapIndicator = (NtpLeapIndicator)((buffer[0] & 0xC0) >> 6),
+                VersionNumber = (buffer[0] & 0x38) >> 3,
+                Mode = (NtpMode)(buffer[0] & 0x07),
+                Stratum = buffer[1],
+                PollInterval = buffer[2],
+                Precision = (sbyte)buffer[3],
+                RootDelay = GetTimeSpan32(buffer[4..]),
+                RootDispersion = GetTimeSpan32(buffer[8..]),
+                ReferenceId = BinaryPrimitives.ReadUInt32BigEndian(buffer[12..]),
+                ReferenceTimestamp = GetDateTime64(buffer[16..]),
+                OriginTimestamp = GetDateTime64(buffer[24..]),
+                ReceiveTimestamp = GetDateTime64(buffer[32..]),
+                TransmitTimestamp = GetDateTime64(buffer[40..]),
+            };
+            packet.Validate();
+            return packet;
+        }
+
+        /// <summary>
+        /// Validates and serializes the packet.
+        /// </summary>
+        /// <returns>
+        /// Serialized RFC4330 SNTPv4 packet. Previous versions should be also serialized without issue.
+        /// </returns>
+        /// <exception cref="NtpException">
+        /// Thrown when the packet fails validation as if <see cref="Validate()" /> was called.
+        /// </exception>
+        public byte[] ToBytes()
+        {
+            Validate();
+            var buffer = new byte[48];
+            Span<byte> bytes = buffer;
+            bytes[0] = (byte)(((uint)LeapIndicator << 6) | ((uint)VersionNumber << 3) | (uint)Mode);
+            bytes[1] = (byte)Stratum;
+            bytes[2] = (byte)PollInterval;
+            bytes[3] = (byte)Precision;
+            SetTimeSpan32(bytes[4..], RootDelay);
+            SetTimeSpan32(bytes[8..], RootDispersion);
+            BinaryPrimitives.WriteUInt32BigEndian(bytes[12..], ReferenceId);
+            SetDateTime64(bytes[16..], ReferenceTimestamp);
+            SetDateTime64(bytes[24..], OriginTimestamp);
+            SetDateTime64(bytes[32..], ReceiveTimestamp);
+            SetDateTime64(bytes[40..], TransmitTimestamp);
+            return buffer;
+        }
     }
 }

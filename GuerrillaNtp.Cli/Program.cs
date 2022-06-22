@@ -14,26 +14,28 @@ namespace GuerrillaNtp.Cli
                 try
                 {
                     var ntp = new NtpClient(servers[0]);
-                    var packet = ntp.Query();
+                    var time = ntp.Query();
+                    var response = time.Response;
                     Console.WriteLine();
-                    Console.WriteLine("Received {0}B packet", packet.Bytes.Length);
+                    Console.WriteLine("Received response");
                     Console.WriteLine("-------------------------------------");
-                    Console.WriteLine("Correction offset: {0:s'.'FFFFFFF}", packet.CorrectionOffset);
-                    Console.WriteLine("Round-trip time:   {0:s'.'FFFFFFF}", packet.RoundTripTime);
-                    Console.WriteLine("Origin time:       {0:hh:mm:ss.fff}", packet.OriginTimestamp);
-                    Console.WriteLine("Receive time:      {0:hh:mm:ss.fff}", packet.ReceiveTimestamp);
-                    Console.WriteLine("Transmit time:     {0:hh:mm:ss.fff}", packet.TransmitTimestamp);
-                    Console.WriteLine("Destination time:  {0:hh:mm:ss.fff}", packet.DestinationTimestamp);
-                    Console.WriteLine("Protocol version:  {0}", packet.VersionNumber);
-                    Console.WriteLine("Protocol mode:     {0}", packet.Mode);
-                    Console.WriteLine("Leap second:       {0}", packet.LeapIndicator);
-                    Console.WriteLine("Stratum:           {0}", packet.Stratum);
-                    Console.WriteLine("Reference ID:      0x{0:x}", packet.ReferenceId);
-                    Console.WriteLine("Reference time:    {0:hh:mm:ss.fff}", packet.ReferenceTimestamp);
-                    Console.WriteLine("Root delay:        {0}ms", packet.RootDelay.TotalMilliseconds);
-                    Console.WriteLine("Root dispersion:   {0}ms", packet.RootDispersion.TotalMilliseconds);
-                    Console.WriteLine("Poll interval:     2^{0}s", packet.Poll);
-                    Console.WriteLine("Precision:         2^{0}s", packet.Precision);
+                    Console.WriteLine("Synchronized:       {0}", time.Synchronized ? "yes" : "no");
+                    Console.WriteLine("Network time (UTC): {0:HH:mm:ss.fff}", time.UtcNow);
+                    Console.WriteLine("Network time:       {0:HH:mm:ss.fff}", time.Now);
+                    Console.WriteLine("Correction offset:  {0:s'.'FFFFFFF}", time.CorrectionOffset);
+                    Console.WriteLine("Round-trip time:    {0:s'.'FFFFFFF}", time.RoundTripTime);
+                    Console.WriteLine("Origin time:        {0:HH:mm:ss.fff}", response.OriginTimestamp);
+                    Console.WriteLine("Receive time:       {0:HH:mm:ss.fff}", response.ReceiveTimestamp);
+                    Console.WriteLine("Transmit time:      {0:HH:mm:ss.fff}", response.TransmitTimestamp);
+                    Console.WriteLine("Destination time:   {0:HH:mm:ss.fff}", response.DestinationTimestamp);
+                    Console.WriteLine("Leap second:        {0}", response.LeapIndicator);
+                    Console.WriteLine("Stratum:            {0}", response.Stratum);
+                    Console.WriteLine("Reference ID:       0x{0:x}", response.ReferenceId);
+                    Console.WriteLine("Reference time:     {0:HH:mm:ss.fff}", response.ReferenceTimestamp);
+                    Console.WriteLine("Root delay:         {0}ms", response.RootDelay.TotalMilliseconds);
+                    Console.WriteLine("Root dispersion:    {0}ms", response.RootDispersion.TotalMilliseconds);
+                    Console.WriteLine("Poll interval:      2^{0}s", response.PollInterval);
+                    Console.WriteLine("Precision:          2^{0}s", response.Precision);
                     Console.WriteLine();
                 }
                 catch (Exception ex)
