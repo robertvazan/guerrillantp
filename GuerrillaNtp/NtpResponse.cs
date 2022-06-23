@@ -8,11 +8,11 @@ namespace GuerrillaNtp
     /// </summary>
     /// <remarks>
     /// This is a low-level API for examining SNTP responses extracted from <see cref="NtpPacket" />.
-    /// Most applications should just use <see cref="NtpClient.Query()" /> and properties in <see cref="NtpTime" />.
+    /// Most applications should just use <see cref="NtpClient.Query()" /> and properties in <see cref="NtpClock" />.
     /// In addition to fields found in <see cref="NtpPacket" />, this object also carries <see cref="DestinationTimestamp" />,
-    /// which is essential to calculation of <see cref="NtpTime" />.
+    /// which is essential to calculation of <see cref="NtpClock" />.
     /// </remarks>
-    /// <seealso cref="NtpTime" />
+    /// <seealso cref="NtpClock" />
     /// <seealso cref="NtpPacket" />
     /// <seealso cref="NtpRequest" />
     public record NtpResponse

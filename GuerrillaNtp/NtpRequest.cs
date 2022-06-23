@@ -8,7 +8,7 @@ namespace GuerrillaNtp
     /// </summary>
     /// <remarks>
     /// This is a low-level API for building SNTP requests, which can then be converted to <see cref="NtpPacket" />.
-    /// Most applications should just use <see cref="NtpClient.Query()" /> and properties in <see cref="NtpTime" />.
+    /// Most applications should just use <see cref="NtpClient.Query()" /> and properties in <see cref="NtpClock" />.
     /// </remarks>
     /// <seealso cref="NtpPacket" />
     /// <seealso cref="NtpResponse" />

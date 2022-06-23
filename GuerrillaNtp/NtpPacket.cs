@@ -11,7 +11,7 @@ namespace GuerrillaNtp
     /// The same data structure represents both request and reply packets.
     /// Classes <see cref="NtpRequest" /> and <see cref="NtpResponse" />
     /// provide highewr level representation specialized for requests and responses.
-    /// Most applications should just use <see cref="NtpClient.Query()" /> and properties in <see cref="NtpTime" />.
+    /// Most applications should just use <see cref="NtpClient.Query()" /> and properties in <see cref="NtpClock" />.
     /// </remarks>
     /// <seealso cref="NtpRequest" />
     /// <seealso cref="NtpResponse" />

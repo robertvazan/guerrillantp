@@ -7,22 +7,21 @@ namespace GuerrillaNtp
     /// NTP-synchronized time source.
     /// </summary>
     /// <remarks>
-    /// Application can obtain <see cref="NtpTime" /> by calling <see cref="NtpClient.Query()" />.
-    /// <see cref="NtpTime" /> can be also constructed directly from <see cref="NtpResponse" />.
-    /// Network time is then available from properties <see cref="UtcNow" /> and <see cref="Now" />.
-    /// This time is live, i.e. values of these properties move with time.
-    /// Application can also calculate network time using <see cref="CorrectionOffset" />.
+    /// Application can obtain <see cref="NtpClock" /> by calling <see cref="NtpClient.Query()" />.
+    /// <see cref="NtpClock" /> can be also constructed directly from <see cref="NtpResponse" />.
+    /// Network time is then available from <see cref="UtcNow" /> and <see cref="Now" /> without further network communication.
+    /// Application can also calculate network time on their own using <see cref="CorrectionOffset" />.
     /// </remarks>
-    public record NtpTime(NtpResponse Response)
+    public record NtpClock(NtpResponse Response)
     {
         /// <summary>
         /// SNTP response used to calculate network time.
         /// </summary>
         /// <value>
-        /// SNTP response used to calculate network time reported by <see cref="NtpTime" />.
+        /// Valid SNTP response. Non-fatal response issues are tolerated and reported via <see cref="Synchronized" />.
         /// </value>
         /// <remarks>
-        /// All properties of <see cref="NtpTime" /> are calculated from information in the response.
+        /// All properties of <see cref="NtpClock" /> are calculated from information in the response.
         /// You can find additional detail in the response, including information about accuracy,
         /// leap second, and server's preferred poll interval.
         /// </remarks>
@@ -35,11 +34,11 @@ namespace GuerrillaNtp
         /// True if time reported by this object is synchronized via NTP, false otherwise.
         /// </value>
         /// <remarks>
-        /// Time might not be synchronized even after response is successfully received from NTP server.
+        /// Time might be unsynchronized even after response is successfully received from NTP server.
         /// The response might not contain valid network time, for example in the case
         /// of Kiss-o'-Death packet, leap indicator set to alarm condition,
         /// or other fields indicating NTP server itself is not synchronized.
-        /// Consult this property to check whether time reported by other properties can be trusted.
+        /// Consult this property to check whether time reported by other properties of this object can be trusted.
         /// </remarks>
         public bool Synchronized
         {
@@ -113,6 +112,7 @@ namespace GuerrillaNtp
         /// </summary>
         /// <value>
         /// Time the request spent travelling to the server plus the time the reply spent travelling back.
+        /// This time can be negative if clock skew occured on the client while NTP server was queried.
         /// </value>
         /// <remarks>
         /// Round-trip time is calculated from timestamps in the packet as <c>(t1 - t0) + (t3 - t2)</c>
@@ -127,22 +127,22 @@ namespace GuerrillaNtp
         }
 
         /// <summary>
-        /// Unsynchronized local fallback time.
+        /// Unsynchronized fallback time source.
         /// </summary>
         /// <value>
-        /// An instance of <see cref="NtpTime" /> with zero <see cref="CorrectionOffset" />
+        /// An instance of <see cref="NtpClock" /> with zero <see cref="CorrectionOffset" />
         /// and with <see cref="Synchronized" /> returning false.
         /// </value>
         /// <remarks>
         /// You can use this fallback when <see cref="NtpClient.Last" /> is null.
         /// In C#, that would be <see cref="NtpClient.Last" /> ?? <see cref="LocalFallback" />.
         /// </remarks>
-        public static readonly NtpTime LocalFallback;
+        public static readonly NtpClock LocalFallback;
 
-        static NtpTime()
+        static NtpClock()
         {
             var time = DateTime.UtcNow;
-            LocalFallback = new NtpTime(new NtpResponse
+            LocalFallback = new NtpClock(new NtpResponse
             {
                 LeapIndicator = NtpLeapIndicator.AlarmCondition,
                 OriginTimestamp = time,
