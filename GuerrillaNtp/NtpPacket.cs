@@ -1,7 +1,6 @@
 // Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
 using System;
 using System.Buffers.Binary;
-using System.Diagnostics.SymbolStore;
 
 namespace GuerrillaNtp
 {

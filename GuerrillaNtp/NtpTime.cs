@@ -77,10 +77,7 @@ namespace GuerrillaNtp
         /// <seealso cref="UtcNow"/>
         public TimeSpan CorrectionOffset
         {
-            get
-            {
-                return 0.5 * ((Response.ReceiveTimestamp - Response.OriginTimestamp) - (Response.DestinationTimestamp - Response.TransmitTimestamp));
-            }
+            get => 0.5 * ((Response.ReceiveTimestamp - Response.OriginTimestamp) - (Response.DestinationTimestamp - Response.TransmitTimestamp));
         }
 
         /// <summary>
@@ -126,10 +123,7 @@ namespace GuerrillaNtp
         /// </remarks>
         public TimeSpan RoundTripTime
         {
-            get
-            {
-                return (Response.ReceiveTimestamp - Response.OriginTimestamp) + (Response.DestinationTimestamp - Response.TransmitTimestamp);
-            }
+            get => (Response.ReceiveTimestamp - Response.OriginTimestamp) + (Response.DestinationTimestamp - Response.TransmitTimestamp);
         }
 
         /// <summary>
