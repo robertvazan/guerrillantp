@@ -17,8 +17,6 @@ namespace GuerrillaNtp
     /// <seealso cref="NtpResponse" />
     public record NtpPacket
     {
-        static readonly DateTime epoch = new DateTime(1900, 1, 1);
-
         /// <summary>
         /// Leap second indicator.
         /// </summary>
@@ -152,20 +150,6 @@ namespace GuerrillaNtp
         /// </value>
         public DateTime? TransmitTimestamp { get; init; } = DateTime.UtcNow;
 
-        static TimeSpan GetTimeSpan32(ReadOnlySpan<byte> buffer) => TimeSpan.FromSeconds(BinaryPrimitives.ReadInt32BigEndian(buffer) / (double)(1 << 16));
-        static void SetTimeSpan32(Span<byte> buffer, TimeSpan time) => BinaryPrimitives.WriteInt32BigEndian(buffer, (int)(time.TotalSeconds * (1 << 16)));
-        static DateTime? GetDateTime64(ReadOnlySpan<byte> buffer)
-        {
-            var field = BinaryPrimitives.ReadUInt64BigEndian(buffer);
-            if (field == 0)
-                return null;
-            return new DateTime(epoch.Ticks + Convert.ToInt64(field * (1.0 / (1L << 32) * 10000000.0)), DateTimeKind.Utc);
-        }
-        void SetDateTime64(Span<byte> buffer, DateTime? time)
-        {
-            BinaryPrimitives.WriteUInt64BigEndian(buffer, time == null ? 0 : Convert.ToUInt64((time.Value.Ticks - epoch.Ticks) * (0.0000001 * (1L << 32))));
-        }
-
         /// <summary>
         /// Checks whether this object describes valid SNTP packet.
         /// </summary>
@@ -230,13 +214,13 @@ namespace GuerrillaNtp
                 Stratum = buffer[1],
                 PollInterval = buffer[2],
                 Precision = (sbyte)buffer[3],
-                RootDelay = GetTimeSpan32(buffer[4..]),
-                RootDispersion = GetTimeSpan32(buffer[8..]),
+                RootDelay = NtpTimeSpan.Read(buffer[4..]),
+                RootDispersion = NtpTimeSpan.Read(buffer[8..]),
                 ReferenceId = BinaryPrimitives.ReadUInt32BigEndian(buffer[12..]),
-                ReferenceTimestamp = GetDateTime64(buffer[16..]),
-                OriginTimestamp = GetDateTime64(buffer[24..]),
-                ReceiveTimestamp = GetDateTime64(buffer[32..]),
-                TransmitTimestamp = GetDateTime64(buffer[40..]),
+                ReferenceTimestamp = NtpDateTime.Read(buffer[16..]),
+                OriginTimestamp = NtpDateTime.Read(buffer[24..]),
+                ReceiveTimestamp = NtpDateTime.Read(buffer[32..]),
+                TransmitTimestamp = NtpDateTime.Read(buffer[40..]),
             };
             packet.Validate();
             return packet;
@@ -260,13 +244,13 @@ namespace GuerrillaNtp
             bytes[1] = (byte)Stratum;
             bytes[2] = (byte)PollInterval;
             bytes[3] = (byte)Precision;
-            SetTimeSpan32(bytes[4..], RootDelay);
-            SetTimeSpan32(bytes[8..], RootDispersion);
+            NtpTimeSpan.Write(bytes[4..], RootDelay);
+            NtpTimeSpan.Write(bytes[8..], RootDispersion);
             BinaryPrimitives.WriteUInt32BigEndian(bytes[12..], ReferenceId);
-            SetDateTime64(bytes[16..], ReferenceTimestamp);
-            SetDateTime64(bytes[24..], OriginTimestamp);
-            SetDateTime64(bytes[32..], ReceiveTimestamp);
-            SetDateTime64(bytes[40..], TransmitTimestamp);
+            NtpDateTime.Write(bytes[16..], ReferenceTimestamp);
+            NtpDateTime.Write(bytes[24..], OriginTimestamp);
+            NtpDateTime.Write(bytes[32..], ReceiveTimestamp);
+            NtpDateTime.Write(bytes[40..], TransmitTimestamp);
             return buffer;
         }
     }
