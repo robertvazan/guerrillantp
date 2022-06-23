@@ -39,10 +39,7 @@ namespace GuerrillaNtp
             socket.Send(request.ToPacket().ToBytes());
             var buffer = new byte[160];
             int length = socket.Receive(buffer);
-            var response = NtpResponse.FromPacket(NtpPacket.FromBytes(buffer, length));
-            if (!response.Matches(request))
-                throw new NtpException("Response does not match the request.");
-            return last = new NtpTime(response);
+            return Update(request, buffer, length);
         }
     }
 }

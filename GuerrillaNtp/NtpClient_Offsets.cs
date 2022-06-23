@@ -17,6 +17,12 @@ namespace GuerrillaNtp
         /// </value>
         /// <remarks>
         /// <para>
+        /// Once this property is populated with <see cref="NtpTime"/> that is <see cref="NtpTime.Synchronized"/>,
+        /// it will be updated only with another <see cref="NtpTime"/> that is also <see cref="NtpTime.Synchronized"/>,
+        /// This logic is intended to prevent special responses (e.g. Kiss-o'-Death packets),
+        /// which do not really carry network time, from replacing previously obtained network time.
+        /// </para>
+        /// <para>
         /// You can use <see cref="NtpTime.LocalFallback"/> as fallback as in
         /// <see cref="Last"/> ?? <see cref="NtpTime.LocalFallback"/>.
         /// </para>
@@ -27,5 +33,16 @@ namespace GuerrillaNtp
         /// </para>
         /// </remarks>
         public NtpTime Last => last;
+
+        NtpTime Update(NtpRequest request, byte[] buffer, int length)
+        {
+            var response = NtpResponse.FromPacket(NtpPacket.FromBytes(buffer, length));
+            if (!response.Matches(request))
+                throw new NtpException("Response does not match the request.");
+            var time = new NtpTime(response);
+            if (time.Synchronized || last == null)
+                last = time;
+            return time;
+        }
     }
 }

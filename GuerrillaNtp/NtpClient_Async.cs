@@ -44,10 +44,7 @@ namespace GuerrillaNtp
             await socket.SendAsync(request.ToPacket().ToBytes(), SocketFlags.None, token).DefaultAwait();
             var buffer = new byte[160];
             int length = await socket.ReceiveAsync(buffer, SocketFlags.None, token).DefaultAwait();
-            var response = NtpResponse.FromPacket(NtpPacket.FromBytes(buffer, length));
-            if (!response.Matches(request))
-                throw new NtpException("Response does not match the request.");
-            return last = new NtpTime(response);
+            return Update(request, buffer, length);
         }
     }
 }
