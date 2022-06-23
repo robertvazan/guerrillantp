@@ -131,5 +131,31 @@ namespace GuerrillaNtp
                 return (Response.ReceiveTimestamp - Response.OriginTimestamp) + (Response.DestinationTimestamp - Response.TransmitTimestamp);
             }
         }
+
+        /// <summary>
+        /// Unsynchronized local fallback time.
+        /// </summary>
+        /// <value>
+        /// An instance of <see cref="NtpTime" /> with zero <see cref="CorrectionOffset" />
+        /// and with <see cref="Synchronized" /> returning false.
+        /// </value>
+        /// <remarks>
+        /// You can use this fallback when <see cref="NtpClient.Last" /> is null.
+        /// In C#, that would be <see cref="NtpClient.Last" /> ?? <see cref="LocalFallback" />.
+        /// </remarks>
+        public static readonly NtpTime LocalFallback;
+
+        static NtpTime()
+        {
+            var time = DateTime.UtcNow;
+            LocalFallback = new NtpTime(new NtpResponse
+            {
+                LeapIndicator = NtpLeapIndicator.AlarmCondition,
+                OriginTimestamp = time,
+                ReceiveTimestamp = time,
+                TransmitTimestamp = time,
+                DestinationTimestamp = time,
+            });
+        }
     }
 }
