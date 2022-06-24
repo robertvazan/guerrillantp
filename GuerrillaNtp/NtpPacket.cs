@@ -206,6 +206,7 @@ namespace GuerrillaNtp
         {
             if (length < 48 || length > buffer.Length)
                 throw new NtpException("NTP packet must be at least 48 bytes long.");
+            var bytes = buffer.AsSpan();
             var packet = new NtpPacket
             {
                 LeapIndicator = (NtpLeapIndicator)((buffer[0] & 0xC0) >> 6),
@@ -214,13 +215,13 @@ namespace GuerrillaNtp
                 Stratum = buffer[1],
                 PollInterval = buffer[2],
                 Precision = (sbyte)buffer[3],
-                RootDelay = NtpTimeSpan.Read(buffer[4..]),
-                RootDispersion = NtpTimeSpan.Read(buffer[8..]),
-                ReferenceId = BinaryPrimitives.ReadUInt32BigEndian(buffer[12..]),
-                ReferenceTimestamp = NtpDateTime.Read(buffer[16..]),
-                OriginTimestamp = NtpDateTime.Read(buffer[24..]),
-                ReceiveTimestamp = NtpDateTime.Read(buffer[32..]),
-                TransmitTimestamp = NtpDateTime.Read(buffer[40..]),
+                RootDelay = NtpTimeSpan.Read(bytes[4..]),
+                RootDispersion = NtpTimeSpan.Read(bytes[8..]),
+                ReferenceId = BinaryPrimitives.ReadUInt32BigEndian(bytes[12..]),
+                ReferenceTimestamp = NtpDateTime.Read(bytes[16..]),
+                OriginTimestamp = NtpDateTime.Read(bytes[24..]),
+                ReceiveTimestamp = NtpDateTime.Read(bytes[32..]),
+                TransmitTimestamp = NtpDateTime.Read(bytes[40..]),
             };
             packet.Validate();
             return packet;
@@ -239,7 +240,7 @@ namespace GuerrillaNtp
         {
             Validate();
             var buffer = new byte[48];
-            Span<byte> bytes = buffer;
+            var bytes = buffer.AsSpan();
             bytes[0] = (byte)(((uint)LeapIndicator << 6) | ((uint)VersionNumber << 3) | (uint)Mode);
             bytes[1] = (byte)Stratum;
             bytes[2] = (byte)PollInterval;
