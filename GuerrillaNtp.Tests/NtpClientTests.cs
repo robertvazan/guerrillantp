@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
-namespace GuerrillaNtp.Tests
+namespace GuerrillaNtp
 {
     [TestFixture]
     public class NtpClientTests
