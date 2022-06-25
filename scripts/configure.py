@@ -1,12 +1,10 @@
 # This script generates and updates project configuration files.
 
-import pathlib
-
 # We are assuming that project-config is available in sibling directory.
 # Checkout from https://github.com/robertvazan/project-config
+import pathlib
 project_directory = lambda: pathlib.Path(__file__).parent.parent
 config_directory = lambda: project_directory().parent/'project-config'
-
 exec((config_directory()/'src'/'net.py').read_text())
 
 root_namespace = lambda: 'GuerrillaNtp'
