@@ -61,9 +61,9 @@ namespace GuerrillaNtp
         /// Query timeout.
         /// </summary>
         /// <value>
-        /// How long to wait for server response. Defaults to <see cref="DefaultTimeout" />.
+        /// How long to wait for server response. Initialized in constructor.
         /// </value>
-        public TimeSpan Timeout { get; set; }
+        public TimeSpan Timeout { get; init; }
 
         readonly EndPoint endpoint;
 
