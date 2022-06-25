@@ -4,6 +4,7 @@
 # GuerrillaNtp
 
 [![Nuget](https://img.shields.io/nuget/v/GuerrillaNtp)](https://www.nuget.org/packages/GuerrillaNtp/)
+[![Build status](https://github.com/robertvazan/guerrillantp/workflows/build/badge.svg)](https://github.com/robertvazan/guerrillantp/actions/workflows/build.yml)
 
 GuerrillaNtp is a [RFC4330](https://tools.ietf.org/html/rfc4330) SNTP/NTP client written in C# that can be embedded in desktop .NET applications
 to provide them with accurate network time even when the system clock is unsynchronized.
