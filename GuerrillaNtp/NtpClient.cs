@@ -65,9 +65,9 @@ namespace GuerrillaNtp
         /// </value>
         public TimeSpan Timeout { get; init; }
 
-        readonly EndPoint endpoint;
+        private readonly EndPoint endpoint;
 
-        Socket CreateSocket()
+        private Socket CreateSocket()
         {
             var socket = new Socket(SocketType.Dgram, ProtocolType.Udp)
             {
@@ -109,7 +109,7 @@ namespace GuerrillaNtp
         /// <param name="port">Server port. Null to use <see cref="DefaultPort"/>.</param>
         public NtpClient(string host, TimeSpan? timeout = null, int? port = null) : this(new DnsEndPoint(host, port ?? DefaultPort), timeout) { }
 
-        volatile NtpClock last;
+        private volatile NtpClock last;
 
         /// <summary>
         /// Result of the last NTP query.
@@ -137,7 +137,7 @@ namespace GuerrillaNtp
         /// </remarks>
         public NtpClock Last => last;
 
-        NtpClock Update(NtpRequest request, byte[] buffer, int length)
+        private NtpClock Update(NtpRequest request, byte[] buffer, int length)
         {
             var response = NtpResponse.FromPacket(NtpPacket.FromBytes(buffer, length));
             if (!response.Matches(request))
@@ -148,7 +148,7 @@ namespace GuerrillaNtp
             return time;
         }
 
-        Socket Connect()
+        private Socket Connect()
         {
             var socket = CreateSocket();
             try
@@ -180,16 +180,20 @@ namespace GuerrillaNtp
             var request = new NtpRequest();
             socket.Send(request.ToPacket().ToBytes());
             var buffer = new byte[160];
-            int length = socket.Receive(buffer);
+            var length = socket.Receive(buffer);
             return Update(request, buffer, length);
         }
 
-        async Task<Socket> ConnectAsync(CancellationToken token)
+        private async Task<Socket> ConnectAsync(CancellationToken token)
         {
             var socket = CreateSocket();
             try
             {
+#if NET5_0_OR_GREATER
                 await socket.ConnectAsync(endpoint, token).ConfigureAwait(false);
+#else
+                await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, endpoint, null);
+#endif
             }
             catch
             {
@@ -215,10 +219,24 @@ namespace GuerrillaNtp
         {
             using var socket = await ConnectAsync(token).ConfigureAwait(false);
             var request = new NtpRequest();
-            await socket.SendAsync(request.ToPacket().ToBytes(), SocketFlags.None, token).ConfigureAwait(false);
-            var buffer = new byte[160];
-            int length = await socket.ReceiveAsync(buffer, SocketFlags.None, token).ConfigureAwait(false);
-            return Update(request, buffer, length);
+            var flags = SocketFlags.None;
+            var rcvbuff = new byte[160];
+
+#if NET5_0_OR_GREATER
+            await socket.SendAsync(request.ToPacket().ToBytes(), flags, token).ConfigureAwait(false);
+            int length = await socket.ReceiveAsync(rcvbuff, flags, token).ConfigureAwait(false);
+#else
+            var sndbuff = request.ToPacket().ToBytes();
+            await Task.Factory.FromAsync(
+                           socket.BeginSend(sndbuff, 0, sndbuff.Length, flags, null, null),
+                           socket.EndSend);
+
+            var length = await Task.Factory.FromAsync(
+                     (cb, s) => socket.BeginReceive(rcvbuff, 0, rcvbuff.Length, flags, cb, s),
+                     ias => socket.EndReceive(ias),
+                     null);
+#endif
+            return Update(request, rcvbuff, length);
         }
     }
 }
