@@ -162,16 +162,13 @@ public partial class NtpClient
 #if NET5_0_OR_GREATER
             socket.Connect(endpoint);
 #else
-            switch (endpoint)
+            if (endpoint is DnsEndPoint dns)
             {
-                case DnsEndPoint dns:
-                    socket.Connect(dns.Host, dns.Port);
-                    break;
-                case IPEndPoint ip:
-                    socket.Connect(ip.Address, ip.Port);
-                    break;
-                default:
-                    throw new NotSupportedException($"Endpoint of type {endpoint.GetType().Name} not supported");
+                socket.Connect(dns.Host, dns.Port);
+            }
+            else
+            {
+                socket.Connect(endpoint);
             }
 #endif
         }
@@ -212,13 +209,14 @@ public partial class NtpClient
 #if NET5_0_OR_GREATER
             await socket.ConnectAsync(endpoint, token).ConfigureAwait(false);
 #else
-            var connecttask = endpoint switch
+            if (endpoint is DnsEndPoint dns)
             {
-                DnsEndPoint dns => Task.Factory.FromAsync((cb, s) => socket.BeginConnect(dns.Host, dns.Port, null, null), socket.EndConnect, null),
-                IPEndPoint ip => Task.Factory.FromAsync((cb, s) => socket.BeginConnect(ip.Address, ip.Port, null, null), socket.EndConnect, null),
-                _ => throw new NotSupportedException($"Endpoint of type {endpoint.GetType().Name} not supported")
-            };
-            await connecttask.ConfigureAwait(false);
+                await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, dns.Host, dns.Port, null).ConfigureAwait(false);
+            }
+            else
+            {
+                await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, endpoint, null).ConfigureAwait(false);
+            }
 #endif
         }
         catch
