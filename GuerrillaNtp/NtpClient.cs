@@ -192,11 +192,20 @@ namespace GuerrillaNtp
 #if NET5_0_OR_GREATER
                 await socket.ConnectAsync(endpoint, token).ConfigureAwait(false);
 #else
-
-                await Task.Factory.FromAsync(
-                         (cb, s) => socket.BeginConnect(endpoint, null, null),
-                         ias => socket.EndConnect(ias), null
-                ).ConfigureAwait(false);
+                if (endpoint is DnsEndPoint ep)
+                {
+                    await Task.Factory.FromAsync(
+                             (cb, s) => socket.BeginConnect(ep.Host, ep.Port, null, null),
+                             ias => socket.EndConnect(ias), null
+                    ).ConfigureAwait(false);
+                }
+                else
+                {
+                    await Task.Factory.FromAsync(
+                             (cb, s) => socket.BeginConnect(endpoint, null, null),
+                             ias => socket.EndConnect(ias), null
+                    ).ConfigureAwait(false);
+                }
 #endif
             }
             catch
