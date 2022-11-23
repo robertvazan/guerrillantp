@@ -159,7 +159,21 @@ public partial class NtpClient
         var socket = CreateSocket();
         try
         {
+#if NET5_0_OR_GREATER
             socket.Connect(endpoint);
+#else
+            switch (endpoint)
+            {
+                case DnsEndPoint dns:
+                    socket.Connect(dns.Host, dns.Port);
+                    break;
+                case IPEndPoint ip:
+                    socket.Connect(ip.Address, ip.Port);
+                    break;
+                default:
+                    throw new NotSupportedException($"Endpoint of type {endpoint.GetType().Name} not supported");
+            }
+#endif
         }
         catch
         {
