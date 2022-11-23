@@ -192,7 +192,16 @@ namespace GuerrillaNtp
 #if NET5_0_OR_GREATER
                 await socket.ConnectAsync(endpoint, token).ConfigureAwait(false);
 #else
-                await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, endpoint, null);
+                // Workaround for DnsEndpoint throwning NotImplementedException
+                // https://github.com/Microsoft/referencesource/blob/3b1eaf5203992df69de44c783a3eda37d3d4cd10/System/net/System/Net/Sockets/Socket.cs#L2747
+                if (endpoint is DnsEndPoint ep)
+                {
+                    await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, ep.Host, ep.Port, null);
+                }
+                else
+                {
+                    await Task.Factory.FromAsync(socket.BeginConnect, socket.EndConnect, endpoint, null);
+                }
 #endif
             }
             catch
