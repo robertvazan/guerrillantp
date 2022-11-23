@@ -17,7 +17,7 @@ namespace GuerrillaNtp
 
         [Test]
         [Retry(3)]
-        public async Task QueryAsync() => await new NtpClient().QueryAsync();
+        public async Task QueryAsync() => await new NtpClient().QueryAsync().ConfigureAwait(false);
 
         [Test]
         public void Timeout()

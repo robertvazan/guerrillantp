@@ -15,7 +15,7 @@ namespace GuerrillaNtp.Cli
                 try
                 {
                     var ntp = new NtpClient(servers[0]);
-                    var time = await ntp.QueryAsync();
+                    var time = await ntp.QueryAsync().ConfigureAwait(false);
                     var response = time.Response;
                     Console.WriteLine();
                     Console.WriteLine("Received response");
