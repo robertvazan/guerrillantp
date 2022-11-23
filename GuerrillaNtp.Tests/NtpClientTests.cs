@@ -1,10 +1,10 @@
 // Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
+using NUnit.Framework;
 using System;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using NUnit.Framework;
 
 namespace GuerrillaNtp
 {
@@ -17,7 +17,7 @@ namespace GuerrillaNtp
 
         [Test]
         [Retry(3)]
-        public async Task QueryAsync() => await new NtpClient().QueryAsync().ConfigureAwait(false);
+        public async Task QueryAsync() => await new NtpClient().QueryAsync();
 
         [Test]
         public void Timeout()
