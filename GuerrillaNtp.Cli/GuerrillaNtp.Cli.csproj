@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net4.8;net6.0</TargetFrameworks>
+    <TargetFrameworks>net4.8;net5.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <Title>GuerrillaNtp CLI</Title>
     <Version>1.0.0</Version>
