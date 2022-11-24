@@ -10,4 +10,4 @@ jobs:
   build:
     uses: robertvazan/project-config/.github/workflows/net-build.yml@master
     with:
-      dotnet-version: 6.0.x
+      dotnet-version: 5.0.x
