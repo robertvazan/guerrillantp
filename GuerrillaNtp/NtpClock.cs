@@ -76,7 +76,11 @@ namespace GuerrillaNtp
         /// <seealso cref="UtcNow"/>
         public TimeSpan CorrectionOffset
         {
+#if NET5_0_OR_GREATER
             get => 0.5 * ((Response.ReceiveTimestamp - Response.OriginTimestamp) - (Response.DestinationTimestamp - Response.TransmitTimestamp));
+#else
+            get => TimeSpan.FromTicks((long)(0.5 * ((Response.ReceiveTimestamp - Response.OriginTimestamp) - (Response.DestinationTimestamp - Response.TransmitTimestamp)).Ticks));
+#endif
         }
 
         /// <summary>

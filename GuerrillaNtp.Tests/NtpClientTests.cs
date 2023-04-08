@@ -1,10 +1,10 @@
 // Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
+using NUnit.Framework;
 using System;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using NUnit.Framework;
 
 namespace GuerrillaNtp
 {

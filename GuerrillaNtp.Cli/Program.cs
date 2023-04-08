@@ -1,11 +1,12 @@
 // Part of GuerrillaNtp: https://guerrillantp.machinezoo.com
 using System;
+using System.Threading.Tasks;
 
 namespace GuerrillaNtp.Cli
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var servers = args.Length > 0 ? args : new[] { "pool.ntp.org" };
             foreach (var host in servers)
@@ -14,7 +15,7 @@ namespace GuerrillaNtp.Cli
                 try
                 {
                     var ntp = new NtpClient(servers[0]);
-                    var time = ntp.Query();
+                    var time = await ntp.QueryAsync();
                     var response = time.Response;
                     Console.WriteLine();
                     Console.WriteLine("Received response");

@@ -4,6 +4,7 @@ using System.Buffers.Binary;
 
 namespace GuerrillaNtp
 {
+
     /// <summary>
     /// RFC4330 SNTP packet used for communication to and from a network time server.
     /// </summary>
@@ -164,10 +165,21 @@ namespace GuerrillaNtp
         {
             if (VersionNumber < 1 || VersionNumber > 7)
                 throw new NtpException("Invalid SNTP protocol version.");
+
+#if NET5_0_OR_GREATER
             if (!Enum.IsDefined(LeapIndicator))
                 throw new NtpException("Invalid leap second indicator value.");
+
             if (!Enum.IsDefined(Mode))
                 throw new NtpException("Invalid NTP protocol mode.");
+#else
+            if (!Enum.IsDefined(typeof(NtpLeapIndicator), LeapIndicator))
+                throw new NtpException("Invalid leap second indicator value.");
+
+            if (!Enum.IsDefined(typeof(NtpMode), Mode))
+                throw new NtpException("Invalid NTP protocol mode.");
+#endif
+
             if ((byte)Stratum != Stratum)
                 throw new NtpException("Invalid stratum number.");
             if ((byte)PollInterval != PollInterval)
