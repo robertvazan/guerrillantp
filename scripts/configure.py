@@ -1,17 +1,27 @@
 # This script generates and updates project configuration files.
 
-# We are assuming that project-config is available in sibling directory.
-# Checkout from https://github.com/robertvazan/project-config
-import pathlib
-project_directory = lambda: pathlib.Path(__file__).parent.parent
-config_directory = lambda: project_directory().parent/'project-config'
-exec((config_directory()/'src'/'net.py').read_text())
+# Run this script with rvscaffold in PYTHONPATH
+import rvscaffold as scaffold
 
-root_namespace = lambda: 'GuerrillaNtp'
-inception_year = lambda: 2014
-nuget_description = lambda: 'Simple NTP (SNTP) client that can be embedded in desktop applications to provide accurate network time even when the system clock is unsynchronized.'
-nuget_tags = lambda: 'NTP; SNTP; time; clock; network'
-extra_sln_projects = lambda: ['GuerrillaNtp.Cli']
+class Project(scaffold.Net):
+    def script_path_text(self): return __file__
+    def root_namespace(self): return 'GuerrillaNtp'
+    def inception_year(self): return 2014
+    def nuget_description(self): return 'Simple NTP (SNTP) client that can be embedded in desktop applications to provide accurate network time even when the system clock is unsynchronized.'
+    def nuget_tags(self): return 'NTP; SNTP; time; clock; network'
+    def project_status(self): return self.stable_status()
+    def backport_frameworks(self): return ['2.0']
 
-generate()
+    def dependencies(self):
+        yield from super().dependencies()
+        yield self.use('System.Memory:4.5.5')
 
+    def notice_text(self):
+        return '''\
+            This code contains imported, though modified, code from
+            https://github.com/dotnet/runtime/blob/419e949d258ecee4c40a460fb09c66d974229623/src/libraries/System.Private.CoreLib/src/System/Index.cs
+            https://github.com/dotnet/runtime/blob/419e949d258ecee4c40a460fb09c66d974229623/src/libraries/System.Private.CoreLib/src/System/Range.cs
+            which is MIT licensed: https://github.com/dotnet/runtime/blob/419e949d258ecee4c40a460fb09c66d974229623/LICENSE.TXT
+        '''
+
+Project().generate()

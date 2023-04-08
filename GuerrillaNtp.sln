@@ -4,8 +4,6 @@ Project("{75fa09e7-45be-5b36-87b4-c5764ee853ec}") = "GuerrillaNtp", "GuerrillaNt
 EndProject
 Project("{12c4ab74-85b5-5557-a267-a798eff53b50}") = "GuerrillaNtp.Tests", "GuerrillaNtp.Tests/GuerrillaNtp.Tests.csproj", "{12c4ab74-85b5-5557-a267-a798eff53b50}"
 EndProject
-Project("{e20f1cc9-859a-5c52-9cd9-7ed3702df630}") = "GuerrillaNtp.Cli", "GuerrillaNtp.Cli/GuerrillaNtp.Cli.csproj", "{e20f1cc9-859a-5c52-9cd9-7ed3702df630}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,9 +18,5 @@ Global
 		{12c4ab74-85b5-5557-a267-a798eff53b50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12c4ab74-85b5-5557-a267-a798eff53b50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12c4ab74-85b5-5557-a267-a798eff53b50}.Release|Any CPU.Build.0 = Release|Any CPU
-		{e20f1cc9-859a-5c52-9cd9-7ed3702df630}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{e20f1cc9-859a-5c52-9cd9-7ed3702df630}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{e20f1cc9-859a-5c52-9cd9-7ed3702df630}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{e20f1cc9-859a-5c52-9cd9-7ed3702df630}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
