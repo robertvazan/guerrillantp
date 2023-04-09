@@ -23,6 +23,7 @@ See [homepage](https://guerrillantp.machinezoo.com/).
 
 * [Homepage](https://guerrillantp.machinezoo.com/)
 * [XML doc comments](https://github.com/robertvazan/guerrillantp/tree/master/GuerrillaNtp)
+* [CLI demo](https://guerrillantp.machinezoo.com/cli)
 
 ## Feedback
 

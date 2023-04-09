@@ -16,6 +16,10 @@ class Project(scaffold.Net):
         yield from super().dependencies()
         yield self.use('System.Memory:4.5.5')
 
+    def documentation_links(self):
+        yield from super().documentation_links()
+        yield 'CLI demo', 'https://guerrillantp.machinezoo.com/cli'
+
     def notice_text(self):
         return '''\
             This code contains imported, though modified, code from
