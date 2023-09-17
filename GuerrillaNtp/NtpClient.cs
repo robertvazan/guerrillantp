@@ -43,6 +43,11 @@ public partial class NtpClient
     public const int DefaultPort = 123;
 
     /// <summary>
+    /// Default AddressFamily (AddressFamily.Unspecified).
+    /// </summary>
+    public const AddressFamily DefaultAddressFamily = AddressFamily.Unspecified;
+
+    /// <summary>
     /// Default SNTP endpoint (pool.ntp.org).
     /// </summary>
     public static readonly EndPoint DefaultEndpoint = new DnsEndPoint(DefaultHost, DefaultPort);
@@ -67,9 +72,11 @@ public partial class NtpClient
 
     private readonly EndPoint endpoint;
 
+    private readonly AddressFamily addressFamily;
+
     private Socket CreateSocket()
     {
-        var socket = new Socket(SocketType.Dgram, ProtocolType.Udp)
+        var socket = new Socket(addressFamily, SocketType.Dgram, ProtocolType.Udp)
         {
             ReceiveTimeout = Convert.ToInt32(Timeout.TotalMilliseconds),
         };
@@ -82,10 +89,12 @@ public partial class NtpClient
     /// </summary>
     /// <param name="endpoint">SNTP server endpoint.</param>
     /// <param name="timeout">Query timeout. Null to use <see cref="DefaultTimeout"/>.</param>
-    public NtpClient(EndPoint endpoint, TimeSpan? timeout = default)
+    /// <param name="addressfamily">AddressFamily. Null to use <see cref="DefaultAddressFamily"/>.</param>
+    public NtpClient(EndPoint endpoint, TimeSpan? timeout = default, AddressFamily? addressfamily = DefaultAddressFamily)
     {
         this.endpoint = endpoint;
         Timeout = timeout ?? DefaultTimeout;
+        addressFamily = addressfamily ?? DefaultAddressFamily;
     }
 
     /// <summary>
