@@ -16,9 +16,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\keypair.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="GuerrillaNtp.Tests" />
+    <InternalsVisibleTo Include="GuerrillaNtp.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100e18b5034010b89d5f208217df303065cfbce35d3ef7eb2ee6575766f53b66c9b22ca6f61921c69aa0b769a7d2e167dccc42b5889d77dc539d7d2993394f3d6f468e15c21165559cd8bbdafc2cc74805d4aea83deac1f6ee25dc368e37c8cffd2345b36a10e0f96236c00ba4df0f057750b0edb08fa22c791bd2f491c179b64ac" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="/" />
